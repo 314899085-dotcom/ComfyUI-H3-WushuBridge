@@ -2,11 +2,19 @@ __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
-models/
+# 权重：插件自训练得到的小权重随仓库分发（clone 即用）
+models/*
+!models/wushu_bridge/
+models/wushu_bridge/*
+!models/wushu_bridge/*.safetensors
+!models/wushu_bridge/*.json
+!models/wushu_bridge/datasets/
+models/wushu_bridge/datasets/*
+!models/wushu_bridge/datasets/*.jsonl
 tools/.h3lint_js_tmp/
 tools/h3lint_js_results.json
-*.safetensors
-*.npz
+# 只放行 models/wushu_bridge 下的桥/评分头权重；其它大权重不入库
+**/*.npz
 _work/
 tools/_pytest_out.txt
 *.log

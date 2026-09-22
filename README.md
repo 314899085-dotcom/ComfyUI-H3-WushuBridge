@@ -397,6 +397,55 @@ with the same layout, so they are interchangeable with the downloads.
 
 ---
 
+## 配套 LoRA（语义逻辑的主要服务对象）
+
+本插件的语义逻辑，主要就是为下面这个**武打动作 LoRA** 服务的：
+
+**Wushu Action LoRA — MiniMax H3（FL2VA / Ref2VA）** → https://huggingface.co/Jojocodex/wushu-action-v7-minimax-h3-fl2va-ref2va-lora
+
+* 触发词：`wushu_action`
+* 定位：武打动作风格 LoRA（ComfyUI 即插即用），训练语料为专业三段式打标的武打片段
+* 仓库内含：E3 主模型（1000 / 2000 步，全量 int8-convrot DiT + bf16 文本编码器）、
+  `Minimax h3多参考双采打斗工作流.json`、`招式TAGS完整清单.md`（写提示词用）、`武术打斗提示词skill.md`
+
+**两者怎么配合**
+
+```text
+CLIPTextEncode(H3) ──► [ H3 武打语义逻辑桥 ] ──► LoraLoader(wushu_action, 0.8~1.0) ──► 采样
+        ▲                        ▲
+        │                        └─ 把「打斗逻辑」推进 conditioning（本插件）
+        └─ 提示词：触发词 wushu_action + 招式术语（来自 LoRA 仓库的招式 TAGS 清单）
+```
+
+* LoRA 放 `ComfyUI/models/loras/`，强度建议 **0.8~1.0**；
+* 提示词里保留触发词 `wushu_action`，招式名从 LoRA 仓库的**招式 TAGS 完整清单**里取，
+  再用本插件的**体检节点**核对结构与物理，用**评分头**给出"武打逻辑合格概率"；
+* 想提升连贯性/物理表现，可再叠加少量强度（0.2~0.4）的运动连贯或物理类 LoRA。
+
+## Companion LoRA (what this logic is built for)
+
+The semantic logic in this plugin is primarily built for the **wushu action LoRA** below:
+
+**Wushu Action LoRA — MiniMax H3 (FL2VA / Ref2VA)** → https://huggingface.co/Jojocodex/wushu-action-v7-minimax-h3-fl2va-ref2va-lora
+
+* Trigger word: `wushu_action`
+* A wushu action style LoRA for MiniMax H3 (drop-in for ComfyUI), trained on professionally tagged fight footage
+* The repo also ships the E3 main model (1000 / 2000 steps), a multi-reference duel workflow JSON,
+  the full move-tag list and a wushu prompt skill doc
+
+**How to combine**
+
+```text
+CLIPTextEncode(H3) ──► [ H3 Wushu Semantic Bridge ] ──► LoraLoader(wushu_action, 0.8~1.0) ──► sampler
+```
+
+Put the LoRA in `ComfyUI/models/loras/` (strength 0.8–1.0), keep the trigger word `wushu_action`,
+take move names from the LoRA repo's tag list, then use this plugin's **lint node** for structure/physics
+and the **JEV scoring head** for a P(logic-pass) on the conditioning.
+
+
+---
+
 # English
 
 **English** | [中文](#comfyui-h3-wushubridge--minimax-h3-武打语义逻辑翻译桥)
