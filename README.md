@@ -329,10 +329,10 @@ git clone https://github.com/314899085-dotcom/ComfyUI-H3-WushuBridge.git
 
 ## 模型下载（不用自己训练也行）
 
-仓库里的模型（语义桥 + JEV 评分头）**不放在 GitHub**（避免把二进制塞进 git 历史），
-而是放在 Hugging Face（**公开仓库**，可直接下载，无需登录）：
+仓库里的模型（语义桥 + JEV 评分头）**随本仓库一起分发**，放在 `models/wushu_bridge/`；
+同时在 Hugging Face 上有一个**公开的权重仓库**（无需登录，带 LFS 版本管理）：
 
-**权重仓库**：https://huggingface.co/Jojocodex/h3-wushu-bridge-weights
+**权重仓库（公开）**：https://huggingface.co/Jojocodex/h3-wushu-bridge-weights
 
 | 文件 | 大小 | 用途 |
 |---|---|---|
@@ -353,6 +353,9 @@ curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
 curl -L -O $BASE/wushu_pairs_v1_pairs.jsonl
 ```
 
+**仓库内镜像**：`models/wushu_bridge/` 下有完全相同的文件（含训练对清单 `datasets/wushu_pairs_v1_pairs.jsonl`
+与两份训练报告）。Hugging Face 上的插件仓库默认**私有**，取镜像需按「安装来源」一节带令牌 clone。
+
 **接线**：
 * **H3 武打语义逻辑桥** → `bridge` 选 `wushu_bridge_wushu_v1.safetensors`，`judge` 选 `wushu_jev_wushu_v1.safetensors`；
 * **H3 武打逻辑评分（JEV 式）** → `judge` 选 `wushu_jev_wushu_v1.safetensors`，`aggregate=mean`，`threshold=0.5`。
@@ -364,10 +367,10 @@ curl -L -O $BASE/wushu_pairs_v1_pairs.jsonl
 
 ## Model download (no training required)
 
-The models (semantic bridge + JEV scoring head) are **not** stored in the GitHub repo (to keep binary blobs out of
-git history). They live on Hugging Face in a **public** repo — direct download, no login:
+The models (semantic bridge + JEV scoring head) **ship with this repo** under `models/wushu_bridge/`.
+They are also published in a **public** Hugging Face weights repo — direct download, no login:
 
-**Weights repo**: https://huggingface.co/Jojocodex/h3-wushu-bridge-weights
+**Weights repo (public)**: https://huggingface.co/Jojocodex/h3-wushu-bridge-weights
 
 | File | Size | Purpose |
 |---|---|---|
@@ -386,6 +389,10 @@ curl -L -O $BASE/wushu_bridge_wushu_v1.safetensors
 curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
 curl -L -O $BASE/wushu_pairs_v1_pairs.jsonl
 ```
+
+**In-repo mirror**: `models/wushu_bridge/` holds the identical files (plus the training-pair manifest
+`datasets/wushu_pairs_v1_pairs.jsonl` and both training reports). The Hugging Face plugin repo is
+**private** by default — clone it with a token as shown in the "Install sources" section.
 
 **Wiring**: bridge node → `bridge = wushu_bridge_wushu_v1.safetensors`, `judge = wushu_jev_wushu_v1.safetensors`;
 JEV score node → `judge = wushu_jev_wushu_v1.safetensors`, `aggregate = mean`, `threshold = 0.5`.
