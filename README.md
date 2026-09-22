@@ -277,6 +277,56 @@ MiniMax H3 Community License 约束。
 
 ---
 
+## 安装来源（本地 / Hugging Face / GitHub）
+
+三种装法任选，装到 `ComfyUI/custom_nodes/` 下并重启 ComfyUI 即可。
+
+**① 从 Hugging Face 克隆**（本仓库默认**私有**，需要你的 HF 令牌）
+
+```bash
+# 私有仓库要先带令牌（把 <TOKEN> 换成你的 HF read 令牌）
+git clone https://Jojocodex:<TOKEN>@huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge.git
+# 或者先登录一次，之后 git 会记住凭据
+pip install -U huggingface_hub && huggingface-cli login
+git clone https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge.git
+```
+
+**② 从 GitHub 克隆**（公开，无需令牌）
+
+```bash
+git clone https://github.com/314899085-dotcom/ComfyUI-H3-WushuBridge.git
+```
+
+**③ 下载 ZIP**：在本页右上角 **Files** 里下载整仓打包，解压后放进 `custom_nodes/` 亦可。
+
+**想把它变公开**：Hugging Face 仓库页 → **Settings** → *Change visibility* → Public（GitHub 侧的私有/公开在仓库 Settings → Danger Zone）。
+
+## Install sources (local / Hugging Face / GitHub)
+
+Pick any of the three; put the folder under `ComfyUI/custom_nodes/` and restart ComfyUI.
+
+**① Clone from Hugging Face** (this repo is **private** by default — your HF token is required)
+
+```bash
+git clone https://Jojocodex:<TOKEN>@huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge.git
+# or log in once and let git remember the credential
+pip install -U huggingface_hub && huggingface-cli login
+git clone https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge.git
+```
+
+**② Clone from GitHub** (public, no token needed)
+
+```bash
+git clone https://github.com/314899085-dotcom/ComfyUI-H3-WushuBridge.git
+```
+
+**③ ZIP download**: use **Files** on this page to download the repo as an archive, then unzip into `custom_nodes/`.
+
+**Make it public**: Hugging Face repo page → **Settings** → *Change visibility* → Public.
+
+
+---
+
 # English
 
 **English** | [中文](#comfyui-h3-wushubridge--minimax-h3-武打语义逻辑翻译桥)
