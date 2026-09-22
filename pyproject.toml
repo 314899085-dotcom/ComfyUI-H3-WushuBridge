@@ -1,0 +1,19 @@
+[project]
+name = "comfyui-h3-wushubridge"
+version = "0.1.0"
+description = "MiniMax H3 武打语义逻辑翻译桥：夹在 conditioning 之间，用小型残差桥 + JEV 式评分头让 CONDITIONING 更懂武打逻辑"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["torch>=2.0", "numpy>=1.24", "safetensors>=0.4"]
+
+[project.urls]
+Repository = ""
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "MiniMax H3 Wushu Semantic Bridge"
+Icon = ""
+requires-comfyui = ">=0.3.0"
+
+[tool.comfy.node]
+category = "MiniMax H3/Wushu Bridge"

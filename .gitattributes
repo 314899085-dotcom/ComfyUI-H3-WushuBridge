@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.safetensors binary
+*.npz binary
+*.zip binary
+
+*.py   linguist-language=Python
+*.js   linguist-language=JavaScript

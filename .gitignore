@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+models/
+tools/.h3lint_js_tmp/
+tools/h3lint_js_results.json
+*.safetensors
+*.npz
+_work/
+tools/_pytest_out.txt
+*.log
