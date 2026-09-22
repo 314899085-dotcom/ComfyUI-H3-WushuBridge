@@ -790,6 +790,10 @@ def build_pairs(
     * ``score_mode`` 见 :func:`score_text`（默认 composite，中英双语复合分）。
     """
     rng = random.Random(seed)
+    # profile 允许为 None（签名里就是 Optional）：这里补上默认档案，
+    # 否则下面读 profile.intensity 会直接 AttributeError（tools/selftest.py 第 2 步实测崩过）
+    if profile is None:
+        profile = DegradeProfile()
     if score_fn is None:
         score_fn = lambda t, m="final": score_text(t, m, score_mode)  # noqa: E731
     goods: List[Tuple[str, str]] = []
