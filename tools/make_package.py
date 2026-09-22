@@ -3,7 +3,7 @@
 用法::
 
     python tools\\make_package.py
-    python tools\\make_package.py --out E:\\Wushu\\ComfyUI-H3-WushuBridge-0.1.0.zip
+    python tools\\make_package.py --out D:\\Wushu\\ComfyUI-H3-WushuBridge-0.1.0.zip
 
 排除：__pycache__、测试临时目录、权重与数据集、以及差分验证时复制过来的
 h3lint.js 临时副本（那是用户自有代码，不随插件分发）。

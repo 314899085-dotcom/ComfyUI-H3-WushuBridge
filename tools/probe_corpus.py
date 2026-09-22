@@ -5,7 +5,7 @@
 用法::
 
     python tools\\probe_corpus.py <路径1> [<路径2> ...]
-    python tools\\probe_corpus.py "E:\\wushulong\\dataset\\clips" "E:\\wushulong\\dataset\\h3_train\\metadata.csv"
+    python tools\\probe_corpus.py "D:\\wushulong\\dataset\\clips" "D:\\wushulong\\dataset\\h3_train\\metadata.csv"
     python tools\\probe_corpus.py --negatives "路径\\metadata.csv" "路径\\rejected"
 
 输出：每个路径抽到多少条候选正例、平均长度、规则分分布，以及（给了

@@ -96,17 +96,17 @@ h3lint 的八维（内容结构 / 运动节奏 / 音频 / 物理逻辑 / 人物�
    推荐直接从你的同分布语料开始：
 
    ```text
-   E:\wushulong\dataset\h3_train\metadata.csv     924 条（列 video,prompt,input_audio,frame_rate）
-   E:\wushulong\dataset\clips                     1847 条（924 英 + 923 中，中文版 [镜头n]）
-   E:\wushulong\docs\提示词库.md                   37 条
-   E:\wushulong\h3_fight_skills                   10 条
+   D:\wushulong\dataset\h3_train\metadata.csv     924 条（列 video,prompt,input_audio,frame_rate）
+   D:\wushulong\dataset\clips                     1847 条（924 英 + 923 中，中文版 [镜头n]）
+   D:\wushulong\docs\提示词库.md                   37 条
+   D:\wushulong\h3_fight_skills                   10 条
    ```
 
    建 **ref2v** 数据集时再加上这份**官方六段 Ref2VA 成品**（格式 100% 可迁移，
    但内容是文戏，武打逻辑分低，别当武打正例用）：
 
    ```text
-   E:\wushulong\H3武斗模拟器-v9.12\_template_sources\drama\h3-prompts-yajni\examples\晴天收信人_H3独立8秒提示词.md   38 条
+   D:\wushulong\H3武斗模拟器-v9.12\_template_sources\drama\h3-prompts-yajni\examples\晴天收信人_H3独立8秒提示词.md   38 条
    ```
 
    > 英文为主是正常的：你的 924 条语料本身以英文为多，本插件的降级算子和词表**中英双语**，

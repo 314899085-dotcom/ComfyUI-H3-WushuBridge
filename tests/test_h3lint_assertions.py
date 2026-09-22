@@ -1,6 +1,6 @@
 """用**用户项目自带的断言对**测本插件的 h3lint 移植版。
 
-来源：`E:\\wushulong\\H3武斗模拟器-v9.12\\tests\\{lint,moves,qi}.test.js` 里
+来源：`D:\\wushulong\\H3武斗模拟器-v9.12\\tests\\{lint,moves,qi}.test.js` 里
 已经写好的断言（盘点报告 §4.4.1「可执行断言对 —— 阈值标定的唯一依据」）。
 这些是"可执行规格"，比读文档猜阈值可靠。
 

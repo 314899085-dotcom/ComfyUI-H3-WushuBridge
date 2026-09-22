@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """h3lint.py — H3 提示词体检（Python 忠实移植版）
 
-移植来源：``E:\\wushulong\\H3武斗模拟器-v9.12\\h3lint.js``（385 行，UMD，VERSION=h3lint-0.3）。
+移植来源：``D:\\wushulong\\H3武斗模拟器-v9.12\\h3lint.js``（385 行，UMD，VERSION=h3lint-0.3）。
 本文件是**逐字段忠实**移植：检查项 id、item 字段、item 顺序、计分权重、grade 阈值、
 stats 字段全部与 JS 版一致，便于用 Node 原版做差分验证。
 

@@ -8,7 +8,7 @@
     (d) 与 JS 原版录制的输出（tools/h3lint_js_results.json）逐条一致；
     (e) 模块导出面 / diagnose 八维 / FIGHT_LOGIC 可选降级。
 
-运行：``python -m pytest tests/test_h3lint.py -q``（在 E:\\Wushu\\ComfyUI-H3-WushuBridge 下）
+运行：``python -m pytest tests/test_h3lint.py -q``（在 D:\\Wushu\\ComfyUI-H3-WushuBridge 下）
 """
 
 from __future__ import annotations

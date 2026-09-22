@@ -5,7 +5,7 @@
  *   node tools/h3lint_diff.mjs <cases.json> <out.json>
  *
  * 为什么要复制：h3lint.js 第 16 行会 require("./sim3d/combat-logic.js")（相对它自己所在
- * 目录解析）。E:\wushulong 下严格只读，本脚本把这两个文件**只读复制**到
+ * 目录解析）。D:\wushulong 下严格只读，本脚本把这两个文件**只读复制**到
  * tools/.h3lint_js_tmp/ 再 require，绝不写回源目录。
  * ========================================================================== */
 import fs from 'node:fs';
@@ -13,7 +13,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
-const SRC_DIR = 'E:\\wushulong\\H3武斗模拟器-v9.12';
+const SRC_DIR = 'D:\\wushulong\\H3武斗模拟器-v9.12';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const TMP = path.join(HERE, '.h3lint_js_tmp');
 
@@ -23,7 +23,7 @@ if (!casesPath || !outPath) {
   process.exit(2);
 }
 
-// ── 1. 只读复制 JS 原版到临时目录（不碰 E:\wushulong）────────────────────────
+// ── 1. 只读复制 JS 原版到临时目录（不碰 D:\wushulong）────────────────────────
 fs.mkdirSync(path.join(TMP, 'sim3d'), { recursive: true });
 for (const rel of ['h3lint.js', path.join('sim3d', 'combat-logic.js')]) {
   const src = path.join(SRC_DIR, rel);

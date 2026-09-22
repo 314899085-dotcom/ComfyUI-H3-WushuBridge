@@ -5,12 +5,12 @@
 用法::
 
     python tools\\run_all_checks.py
-    python tools\\run_all_checks.py --corpus "E:\\wushulong\\dataset\\h3_train\\metadata.csv"
+    python tools\\run_all_checks.py --corpus "D:\\wushulong\\dataset\\h3_train\\metadata.csv"
     python tools\\run_all_checks.py --skip-train        # 跳过合成训练（更快）
 
 在自建的 venv 里::
 
-    E:\\Wushu\\.venv\\Scripts\\python.exe tools\\run_all_checks.py
+    D:\\Wushu\\.venv\\Scripts\\python.exe tools\\run_all_checks.py
 
 七项检查
 --------

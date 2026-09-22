@@ -11,7 +11,7 @@
 
 在 venv 里::
 
-    E:\\Wushu\\.venv\\Scripts\\python.exe tools\\selftest.py
+    D:\\Wushu\\.venv\\Scripts\\python.exe tools\\selftest.py
 
 关于合成 embedding 的建模方式：现实里 (粗糙写法, 精细写法) 描述的是**同一个
 事件**，所以两条 embedding 共享一个"内容方向"，差别主要在"逻辑完备度"方向 L 上。

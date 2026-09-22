@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """_combat_logic.py — ``sim3d/combat-logic.js`` 中 checkPrompt 部分的 Python 移植。
 
-移植来源：``E:\\wushulong\\H3武斗模拟器-v9.12\\sim3d\\combat-logic.js``（264 行，UMD，
+移植来源：``D:\\wushulong\\H3武斗模拟器-v9.12\\sim3d\\combat-logic.js``（264 行，UMD，
 VERSION=fight-logic-0.2）。h3lint.js 第 16 行 ``require("./sim3d/combat-logic.js")``
 拿到的 FIGHT_LOGIC，在 h3lint.js 的 L303-L310 只用到 ``checkPrompt``，
 所以这里只忠实移植 ``checkPrompt`` 及其词表（CAUSE/FILLER/IDLE/COUNTER），

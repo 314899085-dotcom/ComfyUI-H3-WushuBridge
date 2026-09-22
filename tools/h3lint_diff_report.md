@@ -1,7 +1,7 @@
 # h3lint 差分验证报告：JS 原版 vs Python 移植版
 
-- JS 源：`E:\wushulong\H3武斗模拟器-v9.12\h3lint.js`（h3lint-0.3，Node v24.18.0）
-- JS 依赖：`E:\wushulong\H3武斗模拟器-v9.12\sim3d\combat-logic.js`（fight-logic-0.2，已随移植内置到 `wushu_bridge/lint/_combat_logic.py`）
+- JS 源：`D:\wushulong\H3武斗模拟器-v9.12\h3lint.js`（h3lint-0.3，Node v24.18.0）
+- JS 依赖：`D:\wushulong\H3武斗模拟器-v9.12\sim3d\combat-logic.js`（fight-logic-0.2，已随移植内置到 `wushu_bridge/lint/_combat_logic.py`）
 - Python：`wushu_bridge/lint/h3lint.py`（VERSION=h3lint-0.3）
 - 语料：`tools/h3lint_cases.json`，61 条（`python tools/build_h3lint_cases.py` 生成）
 - JS 侧导出键：`AIR_WORDS`, `BASE_SECTIONS`, `BLOOD`, `DIMENSIONS`, `EMPTY_WORDS`, `IDLE_OPEN`, `LEGACY_FIELDS`, `METAL_SOUND`, `REF_SECTIONS`, `SLOWMO`, `TELEPORT`, `VERSION`, `check`, `diagnose`, `diagnoseReport`, `report`
