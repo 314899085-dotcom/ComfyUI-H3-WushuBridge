@@ -93,7 +93,7 @@ h3lint 的八维（内容结构 / 运动节奏 / 音频 / 物理逻辑 / 人物�
 1. `H3 武打桥 构建数据集`：接上 H3 的 `CLIP` 加载器（**必须是 H3 那套文本编码器**），
    `corpus_path` 指向你自己的提示词库，跑一次得到 `*.npz`。
 
-   推荐直接从你的同分布语料开始（路径与抽出条数均已实测）：
+   推荐直接从你的同分布语料开始：
 
    ```text
    E:\wushulong\dataset\h3_train\metadata.csv     924 条（列 video,prompt,input_audio,frame_rate）
@@ -197,7 +197,7 @@ h3lint 的八维（内容结构 / 运动节奏 / 音频 / 物理逻辑 / 人物�
   而 H3 真正吃进去的是那 5120 维语义；桥是在那个空间里把"缺逻辑的写法"往"逻辑完备的写法"推。
 * **英文台词重复**：`h3lint.js` 原版做台词比对时只保留 CJK（`replace(/[^\u4e00-\u9fff]/g,"")`），
   所以纯英文稿的 `sound-dialogue-repeat` 永远不报。本插件的移植版为此加了 `englishAware` 开关，
-  **对非中文文本默认打开**（实测同一份稿子中文版报、英文版原本不报，现在会报）；
+  **对非中文文本默认打开**；
   默认关闭时与 JS 原版逐位一致（61 条用例差分 score 差 0），两者都保留。
 * **Ref2VA 的镜头数被数错**：官方 Six-section 写法会在 `retention_analysis` 里写
   `(appears in [Shot 1])` 这类**引用**，而 `h3lint.js` 的 `rxShots` 把引用也当镜头数
@@ -205,14 +205,14 @@ h3lint 的八维（内容结构 / 运动节奏 / 音频 / 物理逻辑 / 人物�
   连锁还会让"切镜接续/还是这两人"的段头错位、误报一片。
   本插件加了 `shotCounting` 开关（`raw` / `blocks` / `auto`），**`auto` 为
   非 raw 默认值**：只在检测到引用式写法时改按"行首分镜块"计数。
-  实测我的 Ref2VA 种子 `58 分(shot-many error) → 89 分(零 error)`；
+  Ref2VA 种子建议先跑一次体检看分数，并优先消掉 `shot-many` 这类结构 error；
   默认 `raw` 时仍与 JS 逐位一致。
 * **两条负面项硬约束**（来自你的使用指南，插件已按此设计）：
   1. 负面词（站桩对望、拳头挡刀、空手接刃、瞬移、血条 UI 分数、慢动作、剑气）
      **不进正向提示词**，它们属于 ComfyUI 的 negative prompt —— 所以本插件把它们
      当作"降级算子"注入到**负例**里，而种子正例里一个都不出现、也不用否定式措辞。
   2. H3 **没有独立负面栏**，需要"正向点名"：写实人物要正向写皮肤锁，
-     并且避开 `film grain` / `35mm` / `flawless skin`（实测会被放大成重噪点/油腻脸）。
+     并且避开 `film grain` / `35mm` / `flawless skin`（容易被放大成重噪点与油腻脸）。
      这三个词已加入 `lexicons.LOGIC_HOLES["style_risk"]`，逻辑分会自动扣分并报出来。
 
 ---
@@ -247,7 +247,7 @@ ComfyUI-H3-WushuBridge/
    ├─ 使用指南.md          ← **完整使用手册**（安装/11 个节点逐个说明/LoRA 配合/实战/排错）
    ├─ 安装与接线.md
    ├─ 训练流程.md
-   └─ 云主机部署与实测.md
+   └─ 部署说明.md
 ```
 
 **看文档的顺序**：先看 [docs/使用指南.md](docs/使用指南.md)——自包含，
@@ -358,7 +358,6 @@ curl -L -O $BASE/wushu_pairs_v1_pairs.jsonl
 * **H3 武打逻辑评分（JEV 式）** → `judge` 选 `wushu_jev_wushu_v1.safetensors`，`aggregate=mean`，`threshold=0.5`。
 
 **参考跑参**：`alpha ≈ 0.12`、`magnitude_match=per_token`、`token_span=all`（参考图模式用 `tail`）。
-实测：用评分头对同一段分镜做参数搜索，12 轮把逻辑分从 **0.527 提到 0.638**，关键改动是把 `magnitude_match` 从 `none` 换成 `per_token`。
 
 **想自己训练**：见下面「第 2 步 · 训一次」；训练出的权重会写到 `ComfyUI/models/wushu_bridge/`，
 与这里下载的完全同构（可直接互相替换）。
@@ -392,9 +391,6 @@ curl -L -O $BASE/wushu_pairs_v1_pairs.jsonl
 JEV score node → `judge = wushu_jev_wushu_v1.safetensors`, `aggregate = mean`, `threshold = 0.5`.
 
 **Reference settings**: `alpha ≈ 0.12`, `magnitude_match = per_token`, `token_span = all` (`tail` for reference-image mode).
-Measured: a JEV-driven search lifted the logic score from **0.527 to 0.638** in 12 rounds; the key change was
-`magnitude_match: none → per_token`.
-
 **Train your own instead**: see “Step 2 · train once” above; the weights land in `ComfyUI/models/wushu_bridge/`
 with the same layout, so they are interchangeable with the downloads.
 
