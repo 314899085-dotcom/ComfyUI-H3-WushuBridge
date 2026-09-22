@@ -327,6 +327,80 @@ git clone https://github.com/314899085-dotcom/ComfyUI-H3-WushuBridge.git
 
 ---
 
+## 模型下载（不用自己训练也行）
+
+仓库里的模型（语义桥 + JEV 评分头）**不放在 GitHub**（避免把二进制塞进 git 历史），
+而是放在 Hugging Face（**公开仓库**，可直接下载，无需登录）：
+
+**权重仓库**：https://huggingface.co/Jojocodex/h3-wushu-bridge-weights
+
+| 文件 | 大小 | 用途 |
+|---|---|---|
+| [wushu_bridge_wushu_v1.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_bridge_wushu_v1.safetensors) | 16MB | **语义桥**（默认 trans 架构 2 层 d=256） |
+| [wushu_jev_wushu_v1.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_jev_wushu_v1.safetensors) | 6.7MB | **JEV 评分头**（conditioning → P(武打逻辑合格)） |
+| [wushu_bridge_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_bridge_cloud.safetensors) · [wushu_jev_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_jev_cloud.safetensors) | 16MB / 3MB | 早期版本（对照用） |
+| [wushu_pairs_v1_pairs.jsonl](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1_pairs.jsonl) · [wushu_pairs_v1.json](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1.json) | 1.6MB / 308KB | 训练对清单（可**重建数据集**） |
+| `*_report.json` | 8–18KB | 训练报告（参数量/准确率/AUC/ECE/漂移/逐轮历史） |
+
+**安装（一条命令）**：
+
+```bash
+# 装到插件的权重目录（ComfyUI 会自动在这里找）
+mkdir -p ComfyUI/models/wushu_bridge && cd ComfyUI/models/wushu_bridge
+BASE=https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main
+curl -L -O $BASE/wushu_bridge_wushu_v1.safetensors
+curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
+curl -L -O $BASE/wushu_pairs_v1_pairs.jsonl
+```
+
+**接线**：
+* **H3 武打语义逻辑桥** → `bridge` 选 `wushu_bridge_wushu_v1.safetensors`，`judge` 选 `wushu_jev_wushu_v1.safetensors`；
+* **H3 武打逻辑评分（JEV 式）** → `judge` 选 `wushu_jev_wushu_v1.safetensors`，`aggregate=mean`，`threshold=0.5`。
+
+**参考跑参**：`alpha ≈ 0.12`、`magnitude_match=per_token`、`token_span=all`（参考图模式用 `tail`）。
+实测：用评分头对同一段分镜做参数搜索，12 轮把逻辑分从 **0.527 提到 0.638**，关键改动是把 `magnitude_match` 从 `none` 换成 `per_token`。
+
+**想自己训练**：见下面「第 2 步 · 训一次」；训练出的权重会写到 `ComfyUI/models/wushu_bridge/`，
+与这里下载的完全同构（可直接互相替换）。
+
+## Model download (no training required)
+
+The models (semantic bridge + JEV scoring head) are **not** stored in the GitHub repo (to keep binary blobs out of
+git history). They live on Hugging Face in a **public** repo — direct download, no login:
+
+**Weights repo**: https://huggingface.co/Jojocodex/h3-wushu-bridge-weights
+
+| File | Size | Purpose |
+|---|---|---|
+| [wushu_bridge_wushu_v1.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_bridge_wushu_v1.safetensors) | 16MB | **Semantic bridge** (default trans arch, 2 layers, d=256) |
+| [wushu_jev_wushu_v1.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_jev_wushu_v1.safetensors) | 6.7MB | **JEV scoring head** (conditioning → P(logic-pass)) |
+| [wushu_bridge_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_bridge_cloud.safetensors) · [wushu_jev_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_jev_cloud.safetensors) | 16MB / 3MB | earlier versions (reference) |
+| [wushu_pairs_v1_pairs.jsonl](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1_pairs.jsonl) · [wushu_pairs_v1.json](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1.json) | 1.6MB / 308KB | training-pair manifest (can **rebuild the dataset**) |
+| `*_report.json` | 8–18KB | training reports (params / accuracy / AUC / ECE / drift / history) |
+
+**One-command install**:
+
+```bash
+mkdir -p ComfyUI/models/wushu_bridge && cd ComfyUI/models/wushu_bridge
+BASE=https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main
+curl -L -O $BASE/wushu_bridge_wushu_v1.safetensors
+curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
+curl -L -O $BASE/wushu_pairs_v1_pairs.jsonl
+```
+
+**Wiring**: bridge node → `bridge = wushu_bridge_wushu_v1.safetensors`, `judge = wushu_jev_wushu_v1.safetensors`;
+JEV score node → `judge = wushu_jev_wushu_v1.safetensors`, `aggregate = mean`, `threshold = 0.5`.
+
+**Reference settings**: `alpha ≈ 0.12`, `magnitude_match = per_token`, `token_span = all` (`tail` for reference-image mode).
+Measured: a JEV-driven search lifted the logic score from **0.527 to 0.638** in 12 rounds; the key change was
+`magnitude_match: none → per_token`.
+
+**Train your own instead**: see “Step 2 · train once” above; the weights land in `ComfyUI/models/wushu_bridge/`
+with the same layout, so they are interchangeable with the downloads.
+
+
+---
+
 # English
 
 **English** | [中文](#comfyui-h3-wushubridge--minimax-h3-武打语义逻辑翻译桥)
