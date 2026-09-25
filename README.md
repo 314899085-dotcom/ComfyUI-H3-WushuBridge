@@ -192,24 +192,51 @@ Apache-2.0、非自回归的决策模型）当"武打语义裁判"用。它**随
 * **免联网**：权重从本地装配，跑的时候完全离线；
 * **用得上 GPU**：直接跑在 ComfyUI 的 torch 上（实测 RTX 3080，判断 0.7~2.3 秒/次）。
 
-### 装权重（一次性，约 1.4GB）
+### 装权重（一次性，约 1.5GB）
+
+**一条命令（推荐）**——从本项目的公开权重仓直接拉全套：
 
 ```bash
-# 从本地 HuggingFace 缓存装配到 ComfyUI/models/wushu_bridge/laya/（不重新下载）
+python tools/setup_laya.py --from ours
+```
+
+或按情况选来源：
+
+```bash
+# 你机器上已经有 HF 缓存（最快，零下载）
 python tools/setup_laya.py
 
-# 只看会做什么
+# 从 Laya 官方仓下（convaiinnovations/laya）
+python tools/setup_laya.py --from upstream
+
+# 权重已在别处，直接指定目录
+python tools/setup_laya.py --source /path/to/laya-weights
+
+# 只看会做什么 / 只要英文档 / 装完自检
 python tools/setup_laya.py --dry-run
-
-# 只要英文档（省 614MB）
 python tools/setup_laya.py --only english
-
-# 装完自检（确认能加载）
 python tools/setup_laya.py --verify
 ```
 
-只装 `english` + `multilingual` 两档（武打裁判只用这两档；`typed-decisions`
-是给票据/工单那类业务 workflow 的，多占 840MB）。同盘会走硬链接，不额外占空间。
+权重落点：`ComfyUI/models/wushu_bridge/laya/`（可用 `--target` 改）。
+同盘会走硬链接，不额外占空间。
+
+**权重仓库（公开，无需登录）**：
+[laya/ 子目录](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/tree/main/laya) —— 里面就是完整的 bundle 布局：
+
+```
+laya/
+  rl_agent_config.json        ← english 档（根）
+  model.safetensors           842.6MB
+  tokenizer/  encoder/
+  multilingual/               ← 中文档
+    rl_agent_config.json
+    model.safetensors         643.8MB
+    tokenizer/  encoder/
+```
+
+两档合计 **1,524MB**。只装这两档是因为武打裁判只用得上它们；Laya 还有第三档
+`typed-decisions`（票据/工单那类业务 workflow 用）没放进来，想用可 `--from upstream --only all`。
 
 ### 自定义规则怎么写
 
@@ -455,6 +482,10 @@ git clone https://github.com/314899085-dotcom/ComfyUI-H3-WushuBridge.git
 | [wushu_bridge_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_bridge_cloud.safetensors) · [wushu_jev_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_jev_cloud.safetensors) | 16MB / 3MB | 早期版本（对照用） |
 | [wushu_pairs_v1_pairs.jsonl](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1_pairs.jsonl) · [wushu_pairs_v1.json](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1.json) | 1.6MB / 308KB | 训练对清单（可**重建数据集**） |
 | `*_report.json` | 8–18KB | 训练报告（参数量/准确率/AUC/ECE/漂移/逐轮历史） |
+| [`laya/`](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/tree/main/laya) 子目录 | **1,524MB** | **内嵌 Laya 决策模型的权重**（english + multilingual 两档），供两个 Laya 裁判节点用 |
+
+> Laya 权重不用手工下载 —— 装完插件跑 `python tools/setup_laya.py --from ours` 即可，
+> 详见上面「Laya 裁判」一节。
 
 **安装（一条命令）**：
 

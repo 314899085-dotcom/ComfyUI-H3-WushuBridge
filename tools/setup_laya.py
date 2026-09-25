@@ -55,6 +55,10 @@ for _s in (sys.stdout, sys.stderr):
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 REPO = "convaiinnovations/laya"
+# 本项目的公开权重仓：laya/ 子目录里放的就是完整 bundle（english + multilingual 两档）。
+# 用 --from ours 一条命令拿全套，不用碰官方仓的多档布局。
+OURS_REPO = "Jojocodex/h3-wushu-bridge-weights"
+OURS_SUBDIR = "laya"
 # 与 laya.agent 里的 allow_patterns 一致：一个档真正需要的就这四样
 NEEDED = ("rl_agent_config.json", "model.safetensors", "tokenizer", "encoder")
 SUBS = ("multilingual", "typed-decisions")
@@ -199,6 +203,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="把 Laya 权重装配进 ComfyUI")
     ap.add_argument("--target", default="", help="ComfyUI 的 models 目录（默认自动找）")
     ap.add_argument("--source", default="", help="权重来源目录（默认用本地 HF 缓存）")
+    ap.add_argument("--from", dest="from_", default="", choices=["", "cache", "ours", "upstream"],
+                    help="权重来源：cache=本地 HF 缓存（默认）；ours=从本项目的公开权重仓拉"
+                         "（Jojocodex/h3-wushu-bridge-weights 的 laya/ 子目录，一条命令拿全套）；"
+                         "upstream=从 Laya 官方仓拉（convaiinnovations/laya）")
     ap.add_argument("--only", default="english,multilingual",
                     help="装哪些档（逗号分隔）：english,multilingual,typed-decisions / all。"
                          "默认 english,multilingual —— 武打裁判只用这两档；"
@@ -214,19 +222,41 @@ def main() -> int:
     if args.verify:
         return verify(target)
 
-    src = args.source or hf_cache_bundle()
-    if not src:
-        if not args.allow_download:
-            print("本地 HF 缓存里没有 laya 权重。")
-            print("要么先在有网的机器上下载（python -c \"import laya;laya.Agent('convaiinnovations/laya')\"），")
-            print("要么用 --allow-download 让它现在下（约 840MB/档）。")
-            return 2
+    src = args.source or ""
+    mode = args.from_ or ("cache" if src == "" and hf_cache_bundle() else "")
+
+    if src:
+        pass                                     # --source 直接给了目录
+    elif args.from_ == "ours" or (args.from_ == "" and not hf_cache_bundle() and args.allow_download):
+        # 本项目自己的公开权重仓：一条命令拿全套（laya/ 子目录就是 bundle 布局）
         from huggingface_hub import snapshot_download
 
-        print("正在下载权重（可能要几分钟）...")
+        print(f"从本项目权重仓下载：{OURS_REPO}（{OURS_SUBDIR}/ 子目录，约 1.5GB）...")
+        src = snapshot_download(OURS_REPO, repo_type="model",
+                                allow_patterns=[f"{OURS_SUBDIR}/**"])
+        src = os.path.join(src, OURS_SUBDIR)
+        print("下载到:", src)
+    elif args.from_ == "upstream":
+        from huggingface_hub import snapshot_download
+
+        print(f"从 Laya 官方仓下载：{REPO} ...")
         src = snapshot_download(REPO, allow_patterns=[n for n in NEEDED] +
                                 [f"{s}/{n}" for s in SUBS for n in NEEDED])
         print("下载到:", src)
+    elif args.from_ == "cache":
+        src = hf_cache_bundle()
+    else:
+        src = hf_cache_bundle()
+        if not src:
+            print("本地 HF 缓存里没有 laya 权重。三种办法：")
+            print("  ① 从本项目公开权重仓拉（推荐，一条命令拿全套）：")
+            print("       python tools/setup_laya.py --from ours")
+            print("  ② 从 Laya 官方仓下：python tools/setup_laya.py --from upstream")
+            print("  ③ 如果你已在别处装过：python tools/setup_laya.py --source <权重目录>")
+            return 2
+    if not src or not os.path.isdir(src):
+        print(f"来源目录不可用：{src!r}")
+        return 2
 
     only = [x.strip() for x in args.only.split(",") if x.strip()]
     if "all" in only:
