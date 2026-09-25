@@ -1,0 +1,309 @@
+{
+  "pairs_path": "models/wushu_bridge/datasets/wushu_pairs_v2_logic_chains.jsonl",
+  "stats": {
+    "count": 333,
+    "sources": {
+      "corpus": 223,
+      "seed": 110
+    },
+    "mean_bad_score": 0.4307,
+    "mean_good_score": 0.552,
+    "mean_gap": 0.1212,
+    "op_usage": {
+      "holes": 100,
+      "moves": 99,
+      "chain_break": 92,
+      "defense": 89,
+      "force_chain": 72,
+      "feedback": 67,
+      "occlusion": 63,
+      "facing": 58,
+      "distance": 57,
+      "contact": 52,
+      "ending": 41,
+      "ownership": 33,
+      "momentum": 25,
+      "state_carry": 23,
+      "pursuit": 17
+    }
+  },
+  "ops": [
+    "force_chain",
+    "distance",
+    "contact",
+    "feedback",
+    "defense",
+    "moves",
+    "ending",
+    "ownership",
+    "occlusion",
+    "facing",
+    "momentum",
+    "pursuit",
+    "state_carry",
+    "chain_break"
+  ],
+  "chains": [
+    {
+      "name": "duel_basic",
+      "label_zh": "对决基础弧：逼近→测距→攻→防/反→接触→力反馈→状态→追击/终结",
+      "label_en": "Basic duel arc: approach→measure→attack→defense/counter→contact→feedback→state→follow/finisher",
+      "family": "fight",
+      "beats": 7,
+      "slots": [
+        "force",
+        "distance",
+        "pursuit",
+        "facing",
+        "moves",
+        "contact",
+        "defense",
+        "feedback",
+        "momentum",
+        "causal",
+        "state_carry"
+      ]
+    },
+    {
+      "name": "clinch_break_punish",
+      "label_zh": "缠抱→拆开→惩罚",
+      "label_en": "Clinch → break → punish",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "distance",
+        "contact",
+        "force",
+        "defense",
+        "causal",
+        "moves",
+        "feedback"
+      ]
+    },
+    {
+      "name": "feint_commit_punish",
+      "label_zh": "佯攻→实打→惩罚落空",
+      "label_en": "Feint → commit → punish the miss",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "moves",
+        "facing",
+        "distance",
+        "force",
+        "contact",
+        "defense",
+        "feedback",
+        "causal",
+        "momentum"
+      ]
+    },
+    {
+      "name": "disarm_reclaim",
+      "label_zh": "缴械→武器回收或徒手续战",
+      "label_en": "Disarm → reclaim weapon OR continue empty-hand",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "contact",
+        "ownership",
+        "feedback",
+        "force",
+        "distance",
+        "pursuit",
+        "moves",
+        "causal"
+      ]
+    },
+    {
+      "name": "wall_rebound",
+      "label_zh": "击退撞墙→反弹→动量继承续打",
+      "label_en": "Knockback off wall → rebound → inherit momentum",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "feedback",
+        "momentum",
+        "force",
+        "causal",
+        "moves",
+        "contact"
+      ]
+    },
+    {
+      "name": "multi_handoff",
+      "label_zh": "多人交接：谁打谁、下一拍谁接手",
+      "label_en": "Multi-opponent handoff / attack ordering",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "facing",
+        "distance",
+        "handoff",
+        "causal",
+        "moves",
+        "contact",
+        "feedback"
+      ]
+    },
+    {
+      "name": "aerial_jump",
+      "label_zh": "腾空攻击：起跳借力→空中轨迹→落地卸力",
+      "label_en": "Aerial / jump attack: takeoff force + landing unload",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "force",
+        "aerial",
+        "momentum",
+        "moves",
+        "contact",
+        "feedback",
+        "causal"
+      ]
+    },
+    {
+      "name": "weapon_ownership",
+      "label_zh": "武器归属：谁握持、脱手后谁捡回",
+      "label_en": "Ownership: who holds which weapon; who recovers after drop",
+      "family": "behavior",
+      "beats": 3,
+      "slots": [
+        "ownership",
+        "feedback",
+        "contact",
+        "pursuit",
+        "causal"
+      ]
+    },
+    {
+      "name": "occlusion_reappear",
+      "label_zh": "遮挡后入画：仍是同一张脸/服装/武器",
+      "label_en": "Occlusion then re-ID: same face / costume / weapon",
+      "family": "behavior",
+      "beats": 2,
+      "slots": [
+        "occlusion",
+        "cover",
+        "ownership",
+        "facing"
+      ]
+    },
+    {
+      "name": "facing_swap",
+      "label_zh": "换位后相对朝向与左右锁定",
+      "label_en": "Relative facing / left-right after position swap",
+      "family": "behavior",
+      "beats": 3,
+      "slots": [
+        "facing",
+        "distance",
+        "pursuit",
+        "force",
+        "causal"
+      ]
+    },
+    {
+      "name": "pursuit_reengage",
+      "label_zh": "追击→超步→刹停再交手（对决步法版）",
+      "label_en": "Pursuit → overtake → brake and re-engage",
+      "family": "behavior",
+      "beats": 3,
+      "slots": [
+        "pursuit",
+        "distance",
+        "force",
+        "facing",
+        "momentum",
+        "causal",
+        "defense"
+      ]
+    },
+    {
+      "name": "cover_debris",
+      "label_zh": "掩体/道具破碎→碎屑状态跨镜继承",
+      "label_en": "Cover / prop break → debris state inheritance",
+      "family": "behavior",
+      "beats": 2,
+      "slots": [
+        "cover",
+        "contact",
+        "feedback",
+        "env_continuity",
+        "state_carry",
+        "causal"
+      ]
+    },
+    {
+      "name": "ricochet_geometry",
+      "label_zh": "弹刀/格开后刃路几何延续",
+      "label_en": "Catch / ricochet geometry — deflected path continues",
+      "family": "behavior",
+      "beats": 2,
+      "slots": [
+        "ricochet",
+        "contact",
+        "defense",
+        "momentum",
+        "feedback",
+        "causal"
+      ]
+    },
+    {
+      "name": "injury_state_carry",
+      "label_zh": "伤势/状态跨镜继承（伤肩仍受限）",
+      "label_en": "Combat-state inheritance across shots",
+      "family": "behavior",
+      "beats": 2,
+      "slots": [
+        "feedback",
+        "state_carry",
+        "contact",
+        "defense",
+        "causal"
+      ]
+    },
+    {
+      "name": "env_continuity",
+      "label_zh": "环境连续：湿石仍湿、尘土留痕",
+      "label_en": "Environment continuity: wet stone stays wet; dust from prior hit",
+      "family": "behavior",
+      "beats": 2,
+      "slots": [
+        "env_continuity",
+        "feedback",
+        "state_carry",
+        "causal"
+      ]
+    },
+    {
+      "name": "counter_punish",
+      "label_zh": "防守反击→惩罚空档",
+      "label_en": "Defense counter → punish the opening",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "moves",
+        "force",
+        "distance",
+        "defense",
+        "contact",
+        "causal",
+        "feedback"
+      ]
+    },
+    {
+      "name": "weapon_handoff",
+      "label_zh": "主动换手 / 递兵：归属瞬时转移",
+      "label_en": "Active weapon handoff — ownership transfer",
+      "family": "behavior",
+      "beats": 2,
+      "slots": [
+        "ownership",
+        "facing",
+        "causal"
+      ]
+    }
+  ],
+  "note": "TEXT pairs only. Retrain bridge/JEV in ComfyUI with H3 CLIP 5120-d."
+}

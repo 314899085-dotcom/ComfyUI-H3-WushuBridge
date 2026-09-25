@@ -1,5 +1,7 @@
 # ComfyUI-H3-WushuBridge · MiniMax H3 武打语义逻辑翻译桥
 
+> **v1.1**（逻辑链）：完整打斗/行为因果弧 + BUNNY 风格高动态降级族；TEXT 对见 `wushu_pairs_v2_logic_chains.jsonl`。权重仍为 v1，需本机 H3 CLIP 重训。
+
 **中文** | [English](#english)
 
 把「武打逻辑」直接写进 MiniMax H3 的 conditioning 空间：**夹在 conditioning 节点之间**，
@@ -366,6 +368,40 @@ Laya 是非自回归决策模型，**只回答 choice / score / noul 三类问�
 逻辑完备度刻度**，而不是 0/1 开关，概率才可信（训练结束会报 ECE 校准误差）。
 
 ---
+
+## 6.5 v1.1 · BUNNY 启发的高动态逻辑链
+
+受 [BUNNY H3 Conditioning Bridge V2](https://huggingface.co/JOKER141/BUNNY_H3_Conditioning_Bridge) 高动态语义族启发，
+本版把「完整因果弧」与「行为/连续性」写进武打域：
+
+| 家族 | 例子 |
+|---|---|
+| 打斗完整弧 | 逼近→测距→攻防→接触→力反馈→状态→终结；缠抱拆开；佯攻实打；缴械回收；撞墙反弹；1v2 交接；腾空起落 |
+| 行为连续性 | 武器归属、遮挡再识别、换位朝向、追击刹停再交手、掩体碎屑继承、弹刀几何、伤势跨镜、环境仍湿 |
+
+**实现入口**
+
+* 链模板：`wushu_bridge/logic_chains.py`（`CHAINS` / `render_chain` / `validate_chain_coverage`）
+* 词表：`lexicons.py` 新增 ownership / occlusion / momentum / pursuit / facing / state_carry …
+* 降级：`pairs.HIGH_DYNAMIC_OPS` + 默认 `DEFAULT_OPS`（经典 ∪ 高动态）
+* 种子：`seeds.py` 扩到 8 条 T2V + 2 条 Ref2V + 1 条 horde
+* TEXT 对：`models/wushu_bridge/datasets/wushu_pairs_v2_logic_chains.jsonl`
+* 中文说明：[`docs/逻辑链说明.md`](docs/逻辑链说明.md)
+
+**权重**：随包的 `wushu_bridge_wushu_v1.safetensors` / `wushu_jev_wushu_v1.safetensors` **未在本版重训**。
+拉取后请在本机 ComfyUI（H3 CLIP 5120-d）按 `docs/训练流程.md` →「v1.1 逻辑链补训」重建数据集并训 v2 权重。
+
+降级算子对照（v1.1 新增）：
+
+| 算子 | 作用 |
+|---|---|
+| `ownership` | 打乱/丢掉武器归属与回收 |
+| `occlusion` | 去掉遮挡后再识别锁 |
+| `facing` | 打乱换位后左右/朝向 |
+| `momentum` | 去掉击退→反弹→动量继承 |
+| `pursuit` | 去掉追击/刹停再交手因果 |
+| `state_carry` | 去掉伤势/状态跨镜继承 |
+| `chain_break` | 删掉拍间因果连接词 |
 
 ## 7. 诚实的局限
 

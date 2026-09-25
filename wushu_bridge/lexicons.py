@@ -153,6 +153,111 @@ SOUNDSCAPE_EN: List[str] = [
     "growl", "exhale", "breath", "wind", "scrape", "crack", "crunch",
 ]
 
+# ── 武器归属 / 握持状态（BUNNY ownership）────────────────────────────
+OWNERSHIP_ZH: List[str] = [
+    "握持", "双手持", "右手持", "左手持", "握把", "脱手", "掉落", "落地",
+    "捡回", "夺回", "换手", "递刀", "递兵", "归属", "握持权", "踩住刀脊",
+    "刀脱手", "兵器脱手", "空着手", "徒手", "空手架",
+]
+OWNERSHIP_EN: List[str] = [
+    "holds", "holding", "grip", "grips", "ownership", "drops", "dropped",
+    "disarmed", "loses his weapon", "loses her weapon", "reclaims", "reclaim",
+    "recovers the", "picks up", "stoops", "empty-hand", "empty hand",
+    "hilt-out", "weapon changes hands", "hands off the weapon",
+]
+
+# ── 遮挡 / 身份再识别（occlusion re-ID）───────────────────────────────
+OCCLUSION_ZH: List[str] = [
+    "遮挡", "被遮", "出画", "入画", "仍是同一张脸", "同一套服装与武器",
+    "同一人", "仍是同样两人", "面部不可见", "从另一侧", "短暂遮挡",
+]
+OCCLUSION_EN: List[str] = [
+    "occluded", "occlusion", "leaves frame", "re-enters", "reappears",
+    "same face", "same faces", "same costume", "same costumes and weapons",
+    "same two fighters", "still the same", "out of frame", "into frame",
+    "briefly hidden", "re-identification", "re-id",
+]
+
+# ── 动量 / 击退 / 反弹 ────────────────────────────────────────────────
+MOMENTUM_ZH: List[str] = [
+    "动量", "击退", "撞墙", "反弹", "回弹", "余势", "惯性", "作用线",
+    "沿作用线", "动量未泄", "动量继承", "撞上", "后背撞", "反弹前冲",
+]
+MOMENTUM_EN: List[str] = [
+    "momentum", "knockback", "knocked back", "rebounds", "rebound",
+    "inherits momentum", "line of force", "along the line", "off the wall",
+    "wall rebound", "carries through", "follow-through", "residual force",
+]
+
+# ── 追击 / 朝向 / 掩体 ────────────────────────────────────────────────
+PURSUIT_ZH: List[str] = [
+    "追击", "追步", "超步", "刹停", "再交手", "压缩间距", "外侧越过",
+    "回身", "蹬地追", "接手",
+]
+PURSUIT_EN: List[str] = [
+    "pursuit", "pursues", "chase", "chases", "overtakes", "overtake",
+    "brakes", "brake and re-engage", "re-engages", "closes from",
+    "plants to brake", "closes the distance",
+]
+FACING_ZH: List[str] = [
+    "面向", "朝向", "左侧", "右侧", "左前方", "右后方", "换位",
+    "相对朝向", "面朝", "侧对", "背对", "左右",
+]
+FACING_EN: List[str] = [
+    "facing", "faces", "left side", "right side", "on the left", "on the right",
+    "front-left", "rear-right", "position swap", "relative facing",
+    "turns to face", "back toward",
+]
+COVER_ZH: List[str] = [
+    "掩体", "木柱", "灯笼柱", "土墙", "栏杆", "碎屑", "木屑", "裂开",
+    "道具破碎", "破损留痕", "跨镜保留",
+]
+COVER_EN: List[str] = [
+    "cover", "lantern post", "wooden post", "earthen wall", "debris",
+    "chips", "splits", "prop break", "broken prop", "stays where it fell",
+]
+
+# ── 状态继承 ──────────────────────────────────────────────────────────
+STATE_INHERIT_ZH: List[str] = [
+    "伤肩", "仍受限", "失衡未恢复", "架门缺", "硬直还没过去",
+    "状态继承", "跨镜", "下一镜仍", "伤侧", "抬不高",
+]
+STATE_INHERIT_EN: List[str] = [
+    "injured shoulder", "stays limited", "balance not fully", "state carry",
+    "state inheritance", "across shots", "next shot", "still cannot raise",
+    "guard missing", "stun remains", "injury carries",
+]
+
+# ── 弹刀几何 / 环境连续 / 腾空 / 交接 ────────────────────────────────
+RICOCHET_ZH: List[str] = [
+    "弹刀", "格开", "入射角", "偏转", "刃路", "反弹改向", "路径连续",
+]
+RICOCHET_EN: List[str] = [
+    "ricochet", "deflects", "deflected", "incidence", "blade path",
+    "deflected arc", "path continuous",
+]
+ENV_CONTINUITY_ZH: List[str] = [
+    "仍湿", "湿滑", "尘土仍", "水花仍", "环境未重置", "留痕", "扬尘未散",
+]
+ENV_CONTINUITY_EN: List[str] = [
+    "stays wet", "still wet", "dust remains", "environment not reset",
+    "water from the prior", "slick", "marks the ground",
+]
+AERIAL_ZH: List[str] = [
+    "起跳", "腾空", "离地", "落地屈膝", "卸力", "空中", "借力起跳",
+]
+AERIAL_EN: List[str] = [
+    "takes off", "takeoff", "jump", "jumps", "in air", "lands with knees",
+    "unload", "both feet leave", "aerial",
+]
+HANDOFF_ZH: List[str] = [
+    "交接", "攻击权", "接手", "下一拍目标", "结算", "排序", "谁打谁",
+]
+HANDOFF_EN: List[str] = [
+    "hands off", "handoff", "initiative", "next target", "ordering",
+    "resolves this beat", "takes over",
+]
+
 # ── 合并导出（中英一起用）──────────────────────────────────────────────
 FORCE_CHAIN: List[str] = FORCE_CHAIN_ZH + FORCE_CHAIN_EN
 DISTANCE: List[str] = DISTANCE_ZH + DISTANCE_EN
@@ -163,6 +268,17 @@ MOVE_NAMES: List[str] = MOVE_NAMES_ZH + MOVE_NAMES_EN
 FOOTWORK: List[str] = FOOTWORK_ZH + FOOTWORK_EN
 CAMERA: List[str] = CAMERA_ZH + CAMERA_EN
 SOUNDSCAPE: List[str] = SOUNDSCAPE_ZH + SOUNDSCAPE_EN
+OWNERSHIP: List[str] = OWNERSHIP_ZH + OWNERSHIP_EN
+OCCLUSION: List[str] = OCCLUSION_ZH + OCCLUSION_EN
+MOMENTUM: List[str] = MOMENTUM_ZH + MOMENTUM_EN
+PURSUIT: List[str] = PURSUIT_ZH + PURSUIT_EN
+FACING: List[str] = FACING_ZH + FACING_EN
+COVER: List[str] = COVER_ZH + COVER_EN
+STATE_INHERIT: List[str] = STATE_INHERIT_ZH + STATE_INHERIT_EN
+RICOCHET: List[str] = RICOCHET_ZH + RICOCHET_EN
+ENV_CONTINUITY: List[str] = ENV_CONTINUITY_ZH + ENV_CONTINUITY_EN
+AERIAL: List[str] = AERIAL_ZH + AERIAL_EN
+HANDOFF: List[str] = HANDOFF_ZH + HANDOFF_EN
 
 # 攻击动作词（用于"具体描写 -> 空泛形容"的定位）
 ATTACK_WORDS: List[str] = [
@@ -262,6 +378,18 @@ _SLOT_BUCKETS: Dict[str, List[str]] = {
     "footwork": FOOTWORK,
     "camera": CAMERA,
     "soundscape": SOUNDSCAPE,
+    # BUNNY-inspired high-dynamic families (WUSHU domain)
+    "ownership": OWNERSHIP,
+    "occlusion": OCCLUSION,
+    "momentum": MOMENTUM,
+    "pursuit": PURSUIT,
+    "facing": FACING,
+    "cover": COVER,
+    "state_carry": STATE_INHERIT,
+    "ricochet": RICOCHET,
+    "env_continuity": ENV_CONTINUITY,
+    "aerial": AERIAL,
+    "handoff": HANDOFF,
 }
 
 

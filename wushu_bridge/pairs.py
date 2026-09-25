@@ -25,6 +25,13 @@
 * holes        注入逻辑漏洞（慢动作/剑气/瞬移/血条 UI）
 * order        打乱时间码顺序
 * sound        抽掉音景段
+* ownership    打乱/丢掉武器归属与回收
+* occlusion    去掉遮挡后再识别锁（同一张脸/服装）
+* facing       打乱换位后的左右/朝向
+* momentum     去掉击退→反弹→动量继承
+* pursuit      去掉追击/刹停再交手因果
+* state_carry  去掉伤势/状态跨镜继承
+* chain_break  删掉拍间因果连接词（于是/顺势/therefore…）
 """
 
 from __future__ import annotations
@@ -358,6 +365,168 @@ def _shuffle_timecodes(text: str, rng: random.Random) -> Tuple[str, bool]:
     return "\n".join(lines), True
 
 
+
+# ── 高动态降级算子（BUNNY-inspired）────────────────────────────────────
+
+_OWNERSHIP_PHRASE_ZH = re.compile(
+    r"(?:双手持|右手持|左手持|握持|捡回|夺回|换手|脱手|握持权回到[^，。；]*|归属[^，。；]*)"
+)
+_OWNERSHIP_PHRASE_EN = re.compile(
+    r"\b(?:holds?(?:\s+\w+){0,6}|ownership(?:\s+\w+){0,4}|reclaims?(?:\s+\w+){0,4}|"
+    r"picks?\s+up(?:\s+\w+){0,4}|stoops?(?:\s+\w+){0,6}|empty-hand(?:\s+\w+){0,3})\b[^,.;]*",
+    re.I,
+)
+
+_OCCLUSION_LOCK_ZH = [
+    "仍是同一张脸、同一套服装与武器",
+    "仍是同一张脸、同一套服装与武器。",
+    "仍是同一人、同一套服装与武器",
+    "仍是同样两人、同一张脸、同一套服装兵器",
+]
+_OCCLUSION_LOCK_EN = [
+    "same faces, same costumes and weapons",
+    "same two fighters, same faces, same costumes and weapons",
+    "still the same two fighters, same faces, same costumes and weapons",
+    "still the same face, costume and weapon",
+]
+
+_FACING_ZH_WORDS = lexicons.FACING_ZH
+_FACING_EN_WORDS = lexicons.FACING_EN
+
+_CAUSAL_CONNECTORS_ZH = [
+    "于是", "随即", "紧接着", "接着", "随后", "趁", "因此", "导致",
+    "顺势", "借着", "借这个", "反过来", "立刻",
+]
+_CAUSAL_CONNECTORS_EN = [
+    "therefore", "as a result", "so that", "and then", "in response",
+    "which lets", "off the rebound", "riding the", "following the",
+]
+
+
+def _scramble_ownership(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """打乱武器归属：脱掉握持/捡回描述，或把归属安到错误角色上。"""
+    changed = False
+
+    def fn(line: str) -> Tuple[str, bool]:
+        nonlocal changed
+        chinese = lexicons.is_chinese(line)
+        out = line
+        if chinese:
+            new, n = _OWNERSHIP_PHRASE_ZH.subn("手中空空", out)
+            if n:
+                out, changed = new, True
+            # 把「握持权回到X」改成错误归属
+            if "握持权" in out or "捡回" in out:
+                out2 = out.replace("握持权回到", "握持权错落到").replace("捡回", "视而不见走过")
+                if out2 != out:
+                    out, changed = out2, True
+        else:
+            new, n = _OWNERSHIP_PHRASE_EN.subn("has empty hands", out)
+            if n:
+                out, changed = new, True
+            out2 = re.sub(r"\bownership returns\b", "ownership is confused", out, flags=re.I)
+            out2 = re.sub(r"\breclaims?\b", "ignores the dropped weapon", out2, flags=re.I)
+            if out2 != out:
+                out, changed = out2, True
+        return out, changed
+
+    # 也从非 shot 行里抽掉归属句
+    new, did = _operate_on_shots(text, fn)
+    if not did:
+        # 兜底：抽掉含归属词的句子
+        return _drop_sentences_with(text, lexicons.OWNERSHIP, 0.1, rng)
+    return new, did
+
+
+def _strip_occlusion_locks(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """去掉遮挡后再识别锁（同一张脸/同一套服装）。"""
+    out = text
+    changed = False
+    for phrase in _OCCLUSION_LOCK_ZH + _OCCLUSION_LOCK_EN:
+        if phrase in out and rng.random() < 0.9:
+            out = out.replace(phrase, "")
+            changed = True
+    # 额外：把「入画仍是同一…」改成模糊重入
+    out2 = out.replace("仍是同一张脸", "一个相似的人影")
+    out2 = re.sub(r"\bstill the same (?:two fighters|face)", "a similar-looking figure", out2, flags=re.I)
+    if out2 != out:
+        out, changed = out2, True
+    if not changed:
+        return _drop_sentences_with(text, lexicons.OCCLUSION, 0.15, rng)
+    return out, changed
+
+
+def _scramble_facing(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """打乱左右/朝向：左↔右互换，破坏换位后的空间锁。"""
+    changed = False
+
+    def fn(line: str) -> Tuple[str, bool]:
+        nonlocal changed
+        if rng.random() >= 0.85:
+            return line, False
+        out = line
+        # 临时占位互换，避免二次替换
+        out2 = out.replace("左前方", "§RF§").replace("右后方", "§LB§")
+        out2 = out2.replace("左侧", "§R§").replace("右侧", "§L§")
+        out2 = out2.replace("左边", "§RS§").replace("右边", "§LS§")
+        out2 = out2.replace("画面左", "§FR§").replace("画面右", "§FL§")
+        out2 = (out2.replace("§RF§", "右后方").replace("§LB§", "左前方")
+                    .replace("§R§", "右侧").replace("§L§", "左侧")
+                    .replace("§RS§", "右边").replace("§LS§", "左边")
+                    .replace("§FR§", "画面右").replace("§FL§", "画面左"))
+        # EN
+        out2 = re.sub(r"\bon the left\b", "§OR§", out2, flags=re.I)
+        out2 = re.sub(r"\bon the right\b", "on the left", out2, flags=re.I)
+        out2 = out2.replace("§OR§", "on the right")
+        out2 = re.sub(r"\bfacing (?:left|right)\b", "facing the wrong side", out2, flags=re.I)
+        if out2 != out:
+            changed = True
+            return out2, True
+        return line, False
+
+    return _operate_on_shots(text, fn)
+
+
+def _strip_momentum(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """去掉击退→反弹→动量继承链路。"""
+    return _drop_sentences_with(text, lexicons.MOMENTUM, 0.15, rng)
+
+
+def _strip_pursuit(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """去掉追击 / 刹停再交手因果。"""
+    return _drop_sentences_with(text, lexicons.PURSUIT + ["追击", "刹停", "超步", "re-engage", "overtake"], 0.15, rng)
+
+
+def _strip_state_carry(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """去掉伤势/状态跨镜继承。"""
+    return _drop_sentences_with(text, lexicons.STATE_INHERIT, 0.1, rng)
+
+
+def _break_causal_chain(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """删掉拍间因果连接词，使拍与拍变成并列罗列。"""
+    changed = False
+
+    def fn(line: str) -> Tuple[str, bool]:
+        nonlocal changed
+        out = line
+        chinese = lexicons.is_chinese(out)
+        connectors = _CAUSAL_CONNECTORS_ZH if chinese else _CAUSAL_CONNECTORS_EN
+        for w in connectors:
+            if w.isascii():
+                pat = re.compile(r"\b" + re.escape(w) + r"\b", re.I)
+                if pat.search(out) and rng.random() < 0.85:
+                    out = pat.sub("", out)
+                    changed = True
+            elif w in out and rng.random() < 0.85:
+                out = out.replace(w, "")
+                changed = True
+        # 清理多余空白
+        out = re.sub(r" {2,}", " ", out)
+        return out, changed
+
+    return _operate_on_shots(text, fn)
+
+
 @dataclass
 class DegradeOp:
     key: str
@@ -391,23 +560,44 @@ _OPS: List[DegradeOp] = [
               lambda t, r, lv: _drop_soundscape(t, r)),
     DegradeOp("order", "打乱时间码顺序", 0.3,
               lambda t, r, lv: _shuffle_timecodes(t, r)),
+    # BUNNY-inspired high-dynamic families
+    DegradeOp("ownership", "打乱/丢掉武器归属与回收", 0.9,
+              lambda t, r, lv: _scramble_ownership(t, r)),
+    DegradeOp("occlusion", "去掉遮挡后再识别锁", 0.8,
+              lambda t, r, lv: _strip_occlusion_locks(t, r)),
+    DegradeOp("facing", "打乱换位后左右/朝向", 0.8,
+              lambda t, r, lv: _scramble_facing(t, r)),
+    DegradeOp("momentum", "去掉击退→反弹→动量继承", 0.9,
+              lambda t, r, lv: _strip_momentum(t, r)),
+    DegradeOp("pursuit", "去掉追击/刹停再交手因果", 0.8,
+              lambda t, r, lv: _strip_pursuit(t, r)),
+    DegradeOp("state_carry", "去掉伤势/状态跨镜继承", 0.9,
+              lambda t, r, lv: _strip_state_carry(t, r)),
+    DegradeOp("chain_break", "删掉拍间因果连接词", 1.0,
+              lambda t, r, lv: _break_causal_chain(t, r)),
 ]
 OPS_BY_KEY: Dict[str, DegradeOp] = {op.key: op for op in _OPS}
 ALL_OP_KEYS: List[str] = [op.key for op in _OPS]
-# 只动"逻辑层"、不动场景与人物的算子（默认推荐集）
+# 经典逻辑层算子（不动场景与人物）
 LOGIC_OPS: List[str] = ["force_chain", "distance", "contact", "feedback", "defense", "moves", "ending"]
+# BUNNY 高动态家族算子
+HIGH_DYNAMIC_OPS: List[str] = [
+    "ownership", "occlusion", "facing", "momentum", "pursuit", "state_carry", "chain_break",
+]
+# 默认档案：经典逻辑 + 高动态混合（v1.1）
+DEFAULT_OPS: List[str] = LOGIC_OPS + HIGH_DYNAMIC_OPS
 
 
 @dataclass
 class DegradeProfile:
-    """降级配置。``ops`` 为空时用 ``LOGIC_OPS``（不动场景，专修逻辑）。"""
+    """降级配置。``ops`` 为空时用 ``DEFAULT_OPS``（经典逻辑 + 高动态混合）。"""
 
     ops: List[str] = field(default_factory=list)
     intensity: int = 3           # 1~5，越大越残缺
     keep_ratio_range: Tuple[float, float] = (0.0, 0.25)
 
     def resolved_ops(self) -> List[str]:
-        keys = self.ops or LOGIC_OPS
+        keys = self.ops or DEFAULT_OPS
         bad = [k for k in keys if k not in OPS_BY_KEY]
         if bad:
             raise ValueError(f"未知降级算子：{bad}，可选 {ALL_OP_KEYS}")

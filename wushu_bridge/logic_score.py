@@ -28,11 +28,15 @@ from . import lexicons
 SHOT_RE = re.compile(r"\[(?:Shot|镜头|鏡頭)\s*\d+\]")
 
 # 因果 / 承接连接词：武打分镜必须是"上一拍的结果变成下一拍的起因"
-CAUSAL_ZH = ["于是", "随即", "紧接着", "接着", "随后", "趁", "因此", "导致", "被", "逼得", "迫使", "来不及", "结果"]
+CAUSAL_ZH = [
+    "于是", "随即", "紧接着", "接着", "随后", "趁", "因此", "导致", "被", "逼得",
+    "迫使", "来不及", "结果", "顺势", "借着", "借这个", "反过来", "立刻", "不等",
+]
 CAUSAL_EN = [
     "then", "after", "as ", "because", "so ", "forcing", "forced", "causing",
     "causes", "follows", "following", "in response", "responds", "which",
     "and then", "before", "drives", "driving", "leaving", "knocked",
+    "therefore", "as a result", "which lets", "off the rebound", "riding the",
 ]
 
 # 结局 / 终结信号
@@ -220,6 +224,47 @@ def score_logic(text: str, mode: str = "final", lang: Optional[str] = None) -> L
     penalty = min(1.0, sum(len(v) for v in holes.values()) / 6.0)
     checks.append(LogicCheck("no-logic-holes", "无逻辑漏洞（慢动作/瞬移/特效/UI/风格反噬）", 0.8, 1.0 - penalty,
                              "干净" if not holes else f"命中：{ {k: v[:3] for k, v in holes.items()} }"))
+
+    # ── 13. 高动态槽位（BUNNY-inspired）──────────────────────────────
+    hd_keys = [
+        ("ownership", "武器归属（握持/脱手/捡回）", lexicons.OWNERSHIP, 0.7),
+        ("occlusion-reid", "遮挡后再识别", lexicons.OCCLUSION, 0.6),
+        ("momentum", "动量/击退/反弹继承", lexicons.MOMENTUM, 0.7),
+        ("state-carry", "伤势/状态跨镜继承", lexicons.STATE_INHERIT, 0.7),
+        ("pursuit", "追击/刹停再交手", lexicons.PURSUIT, 0.5),
+        ("facing", "相对朝向/左右", lexicons.FACING, 0.5),
+    ]
+    for cid, label, words, w in hd_keys:
+        r, n = _ratio(shots, words)
+        # 高动态槽位：有则加分；全缺不重罚（种子未必条条都有）
+        soft = 0.55 + 0.45 * r if n else 0.55
+        checks.append(LogicCheck(cid, label, w, soft,
+                                 f"{n}/{len(shots)} 拍命中" if shots else "无分镜"))
+
+    # ── 14. 因果链强度：全文 ≥2 个因果连接 + 分镜覆盖 ────────────────
+    causal_words = CAUSAL_ZH + CAUSAL_EN
+    low = text.lower()
+    causal_hits = sum(1 for w in causal_words if (w.lower() if w.isascii() else w) in low)
+    r, n = _ratio(shots, causal_words)
+    # 强化：既要覆盖率，也要绝对数量 ≥2
+    strength = min(1.0, 0.5 * r + 0.5 * min(1.0, causal_hits / 4.0))
+    if causal_hits < 2:
+        strength = min(strength, 0.35)
+    # 覆盖掉旧的 causal-chain check（id 相同则替换）
+    checks = [c for c in checks if c.id != "causal-chain"]
+    checks.append(LogicCheck(
+        "causal-chain", "因果链（≥2 连接词 + 拍间承接）", 1.4, strength,
+        f"连接词命中约 {causal_hits}，{n}/{len(shots)} 拍有承接",
+    ))
+
+    # ── 15. 多镜状态继承（可选加分项）────────────────────────────────
+    if len(shots) >= 2:
+        carry_n = sum(1 for s in shots if _hit(s, lexicons.STATE_INHERIT + lexicons.OCCLUSION + lexicons.ENV_CONTINUITY))
+        carry_score = min(1.0, 0.4 + 0.6 * (carry_n / len(shots)))
+        checks.append(LogicCheck(
+            "multi-shot-inherit", "多镜状态/身份/环境继承", 0.6, carry_score,
+            f"{carry_n}/{len(shots)} 拍带继承短语",
+        ))
 
     total_w = sum(c.weight for c in checks)
     raw = sum(c.weight * max(0.0, min(1.0, c.score)) for c in checks) / max(total_w, 1e-6)

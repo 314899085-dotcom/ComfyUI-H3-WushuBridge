@@ -11,6 +11,7 @@ models/wushu_bridge/*
 !models/wushu_bridge/datasets/
 models/wushu_bridge/datasets/*
 !models/wushu_bridge/datasets/*.jsonl
+!models/wushu_bridge/datasets/*.json
 tools/.h3lint_js_tmp/
 tools/h3lint_js_results.json
 # 只放行 models/wushu_bridge 下的桥/评分头权重；其它大权重不入库

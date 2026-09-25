@@ -1,4 +1,4 @@
-﻿"""内置种子提示词：严格按 MiniMax H3 官方两套壳写，并且**自身必须过规则引擎**。
+"""内置种子提示词：严格按 MiniMax H3 官方两套壳写，并且**自身必须过规则引擎**。
 
 用途
 ----
@@ -24,8 +24,8 @@
 * 开场即交手，不写「对峙」空转
 * 不写慢动作/定格/剑气/瞬移/血条 UI
 
-注意：这些种子是为了让流水线可跑、并示范"合格的写法"。真正要效果好，还是要把
-用户自己的语料（提示词库、分镜模板、LoRA 打标文件）喂进数据集构建节点。
+v1.1 起额外覆盖 BUNNY 启发的高动态家族：缴械回收、撞墙反弹、遮挡再识别、
+追击刹停再交手、1v2 交接、伤势跨镜继承、湿街追逐（武打味）。
 """
 
 from __future__ import annotations
@@ -33,26 +33,74 @@ from __future__ import annotations
 from typing import Dict, List
 
 SEED_T2V: List[str] = [
-    # ── 对打：雨夜长街，太刀 vs 单刀（3 镜）────────────────────────────
+    # ── 1. 对打完整弧：雨夜长街，太刀 vs 单刀（3 镜）──────────────────
     """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 雨夜长街，两侧灯笼暖光，湿石板反光。角色A是黑发披散的男性，黑色武士劲装，双手持野太刀，画面左前方，间距2格。角色B是灰发束髻的男性，靛蓝汉服武袍，右手持雁翎单刀，画面右后方。此刻角色A的刀尖已经点出，角色B的刀刃横在胸前，两把兵器都挂着水光。
 integrated_multimodal_description:
-[Shot 1] handheld follow, medium shot，胸口手持跟拍。角色A后脚蹬湿石板，转腰送胯，踏步把间距拉近到1格，普攻出「刀锋点刺」，刀尖走直线刺向角色B胸口，随即接招式「过肩劈」，太刀借着惯性走完整弧线。角色B举刀斜挡，刃对刃撞出火星，因此被压得后退半步，鞋底在湿石上打滑。角色A趁这个空档继续前压，两人仍是同一张脸、同一套服装与武器。
-[Shot 2] At 00:02.100.low angle, tracking，贴地跟拍刀弧。角色B在画面左侧，面向角色A，身位退到2格，侧移半步错开刀路，普攻出「撩刀」，刀自下向上兜起。角色A收刀回架，用刀脊磕住刀身，火星溅起，因此虎口发麻，太刀刀势下沉。角色A随即撤步把间距拉回2格，两人仍是同一张脸、同一套服装与武器。
-[Shot 3] At 00:05.600.over-the-shoulder，过角色A肩看角色B。角色A在左侧，朝向角色B，间距2格，拧身换步绕到角色B左前方，招式「斜劈」让太刀斜下走弧。角色B来不及格挡，硬吃一刀，左肩衣料撕裂，血线渗出，因此踉跄倒退2格，重心压在右腿。角色A跟步送刀，终结技「过肩劈」走完整刀路，角色B举刀硬架却被震脱手，于是沿刀的作用线仰面倒地，湿石水花溅起，不再起身。
+[Shot 1] handheld follow, medium shot，胸口手持跟拍。角色A后脚蹬湿石板，转腰送胯，踏步把间距拉近到1格，普攻出「刀锋点刺」，刀尖走直线刺向角色B胸口，随即接招式「过肩劈」，太刀借着惯性走完整弧线。角色B举刀斜挡，刃对刃撞出火星，因此被压得后退半步，鞋底在湿石上打滑，架门被压开、失衡未完全恢复。角色A趁这个空档继续前压，两人仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.100.low angle, tracking，贴地跟拍刀弧。角色B在画面左侧，面向角色A，身位退到2格，侧移半步错开刀路，普攻出「撩刀」，刀自下向上兜起。角色A收刀回架，用刀脊磕住刀身，火星溅起，因此虎口发麻，太刀刀势下沉。角色A随即撤步把间距拉回2格，角色B伤侧发力仍受限，两人仍是同一张脸、同一套服装与武器。
+[Shot 3] At 00:05.600.over-the-shoulder，过角色A肩看角色B。角色A在左侧，朝向角色B，间距2格，拧身换步绕到角色B左前方，招式「斜劈」让太刀斜下走弧。角色B来不及格挡，硬吃一刀，左肩衣料撕裂，血线渗出，因此踉跄倒退2格，重心压在右腿，伤肩仍受限。角色A跟步送刀，终结技「过肩劈」走完整刀路，角色B举刀硬架却被震脱手，于是沿刀的作用线仰面倒地，湿石水花溅起，不再起身。
 overall_soundscape: 踏湿石、刀弧破空、兵刃相交火星、衣料撕裂、闷哼、雨声、粗喘。
 non_diegetic_music: None.""",
-    # ── 对打：枪 vs 棍，长兵器节奏（3 镜）────────────────────────────
+    # ── 2. 枪 vs 棍 ──────────────────────────────────────────────────
     """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 黄昏演武场，夯土地面扬尘，右侧木栏为实体。角色A是青布短打的女性，持白蜡长枪，画面左侧，间距3格。角色B是赤膊束腰的男性，持齐眉棍，画面右侧。此刻角色A的枪尖已经指向角色B胸口高度，角色B的棍横在身前。
 integrated_multimodal_description:
 [Shot 1] medium shot, handheld follow。角色A后脚蹬地，腰胯前送，上步把间距拉近到2格，普攻「扎枪」让枪尖走直线刺向胸口高度。角色B横棍封挡，棍身中段磕住枪杆，火星溅起，因此后退半步泄力，前脚掌搓地扬起尘土。角色A趁枪杆被磕开的角度顺势收枪，两人仍是同一张脸、同一套服装与武器。
-[Shot 2] At 00:02.000.low angle，低机位看棍梢。角色B在右侧，面向角色A，身位仍在2格，侧移半步绕开枪线，招式「扫棍」扫向膝部，棍走平弧。角色A提膝避过，用枪尾向下压住棍杆，杆身相碰发出闷响，因此被迫换步。角色A随即撤步把间距拉回3格，两人仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.000.low angle，低机位看棍梢。角色B在右侧，面向角色A，身位仍在2格，侧移半步绕开枪线，招式「扫棍」扫向膝部，棍走平弧。角色A提膝避过，用枪尾向下压住棍杆，杆身相碰发出闷响，因此被迫换步。角色A随即撤步把间距拉回3格，尘土仍留在两人之间，两人仍是同一张脸、同一套服装与武器。
 [Shot 3] At 00:05.500.斜侧推进，medium shot。角色A在左侧，朝向角色B，间距3格，转身借腰力反手刺出招式「回马枪」。角色B踏步逼进1格缩短长兵器优势，举棍硬挡，棍梢只擦到枪杆，因此被枪尖掠过肋侧，衣角被带起。角色B顺势前压，终结技「劈棍」从肩后走完整弧线砸向肩头，角色A举枪横架却被砸弯枪杆，于是单膝跪地撑在夯土上，棍梢砸地扬起尘土，角色A仍撑着没有倒地。
 overall_soundscape: 夯实脚步、枪杆破空、棍身闷响、尘土落地、衣料摩擦、粗喘。
+non_diegetic_music: None.""",
+    # ── 3. 缴械 + 夺回 ───────────────────────────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 青砖院落，井沿为实体，地面微潮。角色A是束发青衫男性，双手持长剑，画面左侧，间距2格。角色B是短打劲装女性，右手持短刀，画面右侧。此刻两刃已经架在一起。
+integrated_multimodal_description:
+[Shot 1] medium shot, handheld follow。角色A后脚蹬砖，转腰送肩，上步收到1格，普攻「直刺」走直线。角色B侧闪半步用刀脊磕开剑锋，刃对刃脆响，因此剑势偏斜。角色A顺势用剑脊压住短刀握把一拧，短刀脱手落地，归属从角色B转到青砖地面，两人仍是同一张脸、同一套服装，角色B此刻空手。
+[Shot 2] At 00:02.200.low angle，贴地看落刀。角色B在右侧，面向角色A，间距1格，俯身去捡回短刀；角色A跟步踩住刀脊阻止回收。角色B沉胯卸力抽手，改空手架门，因此握持权暂时仍在地面。角色B随即撤步拉开到2格，两人仍是同一张脸、同一套服装。
+[Shot 3] At 00:05.400.over-the-shoulder。角色A在左侧朝向角色B，间距2格，招式「斜劈」压下。角色B侧滚避开，滚势中捡回短刀，于是握持权回到角色B右手。角色B借起身惯性「撩刀」反击，角色A举剑硬架却被震得虎口发麻，于是角色B跟步终结技「点刺」刺中肩窝，角色A沿作用线单膝跪地，不再起身抢攻。
+overall_soundscape: 踏砖、兵刃相交、刀落青砖、翻滚刮地、闷哼、粗喘。
+non_diegetic_music: None.""",
+    # ── 4. 撞墙反弹 + 动量继承 ───────────────────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 夜巷窄街，两侧土墙为实体，夯土地面。角色A是短打持单刀女性，画面左侧，间距2格。角色B是劲装持短棍男性，画面右侧，背后半格即是土墙。
+integrated_multimodal_description:
+[Shot 1] handheld follow, medium shot。角色A后脚蹬土，转腰送胯，踏步收到1格，招式「过肩劈」走完整垂弧。角色B举棍横挡，棍身中段硬吃一记，因此被击退，后背撞上实体土墙，冲击沿脊柱回传，动量未泄。两人仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.000.low angle，贴墙跟拍。角色B在右侧贴墙，面向角色A，借墙面反弹前冲，顺势把余势送进「扫棍」扫向膝线，棍走平弧。角色A提膝避过并用刀脊下压，火星溅起，因此被迫换步。角色A随即撤半步，动量继承的余波仍让角色B身位前压，两人仍是同一张脸、同一套服装与武器。
+[Shot 3] At 00:05.200.斜侧推进。角色A在左侧朝向角色B，间距1格，拧腰「横扫」回敬。角色B来不及完整格挡，硬吃刀脊一下踉跄，于是角色A跟步终结技「正劈」砸开架门，角色B沿作用线侧倒撞墙再滑落，不再起身。
+overall_soundscape: 踏土、刀风、棍身闷响、撞墙回声、火星、粗喘。
+non_diegetic_music: None.""",
+    # ── 5. 遮挡后入画再识别 ─────────────────────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 雨夜长街，右侧灯笼柱为实体掩体，湿石反光。角色A是黑衣持太刀男性，画面左侧，间距2格。角色B是靛蓝袍持单刀男性，画面右侧。
+integrated_multimodal_description:
+[Shot 1] medium shot, handheld follow。角色A后脚蹬湿石，上步收到1格，普攻「点刺」刺向胸口。角色B斜挡刃对刃出火星，因此侧移把身体没入灯笼柱后方，被掩体短暂遮挡出画，面部与兵器暂时不可见。角色A踩着水花绕柱，湿石仍湿。
+[Shot 2] At 00:02.300.tracking，绕柱跟拍。角色A在左侧朝向柱后，间距1格。角色B从灯笼柱另一侧入画，仍是同一张脸、同一套服装与武器，朝向面向角色A，没有左右颠倒串人。角色B借出柱惯性「撩刀」上打，角色A刀脊磕住，因此虎口发麻。两人仍是同一张脸、同一套服装与武器。
+[Shot 3] At 00:05.500.over-the-shoulder。角色A在左侧，角色B在右侧，间距2格。角色A拧身「斜劈」压下，角色B硬吃一刀左肩衣破渗血，伤肩仍受限，因此踉跄。角色A跟步终结技「过肩劈」，角色B脱手仰面倒地，水花溅起，不再起身。
+overall_soundscape: 踏湿石、绕柱衣料、兵刃相交、衣裂、雨声、粗喘。
+non_diegetic_music: None.""",
+    # ── 6. 追击 → 超步 → 刹停再交手 ─────────────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 青石坡道，两侧矮墙，薄雾。角色A是青衫持剑男性，画面后方追击位。角色B是灰袍持刀男性，画面前方逃跑位，初始间距3格。
+integrated_multimodal_description:
+[Shot 1] tracking, medium shot，跟追。角色A后脚蹬青石追击，把间距从3格压缩到2格，转腰「直刺」探出。角色B边跑边回头斜挡，刃面擦过火星，因此身位继续前窜。两人仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.100.low angle，贴地看脚步。角色A外侧超步越过角色B肩线，朝向短暂同向，随即蹬地刹停回身，重新对面向角色B举剑。角色B刹步回防举刀，间距回到1格，因此两人重新对位交手。仍是同一张脸、同一套服装与武器。
+[Shot 3] At 00:05.300.over-the-shoulder。角色A在左侧面向角色B，间距1格，招式「斜劈」打进。角色B格挡不及硬吃，衣料撕裂，于是角色A跟步终结技「点刺」刺中肋侧，角色B沿作用线跪倒青石，不再起身。
+overall_soundscape: 追步踏石、刹停搓地、兵刃相交、衣裂、粗喘、薄雾风声。
+non_diegetic_music: None.""",
+    # ── 7. 1v2 交接 / 排序 ───────────────────────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 夜巷岔口，夯土路面，两侧土墙。角色A是短打持单刀女性，开场居中。角色B是劲装持短棍男性，在角色A左前方1格。角色C是布衣持竹矛男性，在角色A右后方2格。
+integrated_multimodal_description:
+[Shot 1] handheld follow, medium shot。角色A正对角色B，暂时把角色C压在视野边缘，先结算与角色B的这一拍：后脚蹬地「正劈」垂弧劈中角色B肩头，因此角色B侧倒出画。攻击权随即交接，角色A回身面向角色C。仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.000.tracking。角色C从右后方上步接手，间距收到1格，竹矛「扎枪」刺来。角色A侧闪用刀脊磕开矛杆，火星与木屑溅起，因此角色C前冲失衡。角色A明确下一拍目标是角色C而不是已倒地的角色B，两人（A与C）仍是同一张脸、同一套服装与武器。
+[Shot 3] At 00:05.000.wide shot。角色A在左侧朝向角色C，跟步终结技「横扫」走平弧扫中腰侧，角色C沿作用线倒地，不再起身。本场攻击排序：先B后C，交接清楚。
+overall_soundscape: 踏土、刀风、棍倒、矛杆磕击、倒地、夜风、粗喘。
+non_diegetic_music: None.""",
+    # ── 8. 湿街追逐（武打味高动态行为：归属+朝向+环境）──────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 雨夜湿石长街，灯笼暖光，地面持续反光仍湿。角色A是黑衣持短刀男性，画面后方。角色B是灰衣持包袱与腰刀男性，画面前方，间距4格。
+integrated_multimodal_description:
+[Shot 1] tracking, medium shot。角色A蹬湿石追击压缩到2格，角色B回身抽腰刀格挡，刃对刃出火星，因此包袱带滑、包袱仍由角色B左手握持，归属明确。鞋底打滑，湿石仍湿未重置。两人仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.200.low angle。角色A外侧超步，朝向短暂同向，随即刹停回身重新面向角色B。角色B换到左侧、角色A在右侧，间距1格，相对朝向锁定，没有左右串人。角色B顺势「撩刀」反击，角色A刀脊架住。
+[Shot 3] At 00:05.400.over-the-shoulder。角色A在右侧面向左，角色B在左侧面向右。角色A拧腰「斜劈」打掉角色B架门，腰刀脱手落地，握持权落到湿石；包袱仍在角色B左手。角色A跟步逼得角色B单膝跪地撑住，于是追击结束，角色B不再起跑。
+overall_soundscape: 踏湿石打滑、追步、兵刃相交、包袱布料、雨声、粗喘。
 non_diegetic_music: None.""",
 ]
 
 SEED_REF2V: List[str] = [
-    # ── 多参考图：六段壳，用参考图锁定人物与场景（3 镜）──────────────
+    # ── 多参考图：雨夜对决（原有，略加强状态继承）────────────────────
     """subject_definitions:
 <Subject 1> is the man in <Picture 1>, with loose black hair, a black warrior's jacket, and a long tachi held in both hands. Preserve his face, hairstyle, clothing, and body proportions.
 <Subject 2> is the man in <Picture 2>, with tied-back grey hair, an indigo han-style martial robe, and a single yanling saber in his right hand. Preserve his face, hairstyle, clothing, and body proportions.
@@ -64,10 +112,27 @@ retention_analysis:
 <Subject 2> (appears in [Shot 2]): fully_preserved - face, grey tied-back hair, indigo robe, and saber remain unchanged.
 <Subject 3> (appears in [Shot 3]): fully_preserved - lantern positions, wet slabs, and the lantern post stay stable.
 detailed_description:
-[Shot 1] handheld follow, medium shot from chest height. <Subject 1> drives his rear foot into the wet stone, turns his waist, and steps in from two steps to one, then thrusts with the tachi tip along a straight line and follows with an overhead chop that carries the blade through a full arc. <Subject 2> raises his saber into a diagonal guard; edge meets edge, sparks fly, and he is pushed back half a step with his sole sliding on the wet stone. <Subject 1> presses the opening, and the two are still the same two fighters, same faces, same costumes and weapons.
-[Shot 2] At 00:02.100.low angle, tracking, following the blade arc close to the ground. <Subject 2> is on the left, facing <Subject 1>, holding two steps of distance, and slides half a step to the side to clear the blade path, then flicks his saber upward. <Subject 1> pulls the tachi back into a guard and jams the blade with his spine; sparks scatter and his grip goes numb, so the tachi sinks. <Subject 1> then steps back to two steps of distance, and the two are still the same two fighters, same faces, same costumes and weapons.
-[Shot 3] At 00:05.600.over-the-shoulder from behind <Subject 1>. <Subject 1> is on the left, facing <Subject 2> at two steps, turns his hips and steps around to <Subject 2>'s front-left, and cuts diagonally downward. <Subject 2> cannot guard in time and takes the cut; the cloth on his left shoulder tears and a thin line of blood shows, so he staggers back two steps with his weight on the right leg. <Subject 1> follows through with a finishing overhead chop along the full arc; <Subject 2> braces with his saber but it is knocked from his hands, and he falls onto his back along the line of force, water splashing on the wet stone, and does not get up.
+[Shot 1] handheld follow, medium shot from chest height. <Subject 1> drives his rear foot into the wet stone, turns his waist, and steps in from two steps to one, then thrusts with the tachi tip along a straight line and follows with an overhead chop that carries the blade through a full arc. <Subject 2> raises his saber into a diagonal guard; edge meets edge, sparks fly, and he is pushed back half a step with his sole sliding on the wet stone, guard forced open and balance not fully recovered. <Subject 1> presses the opening, and the two are still the same two fighters, same faces, same costumes and weapons.
+[Shot 2] At 00:02.100.low angle, tracking, following the blade arc close to the ground. <Subject 2> is on the left, facing <Subject 1>, holding two steps of distance, and slides half a step to the side to clear the blade path, then flicks his saber upward. <Subject 1> pulls the tachi back into a guard and jams the blade with his spine; sparks scatter and his grip goes numb, so the tachi sinks. <Subject 1> then steps back to two steps of distance; <Subject 2>'s injured side stays limited, and the two are still the same two fighters, same faces, same costumes and weapons.
+[Shot 3] At 00:05.600.over-the-shoulder from behind <Subject 1>. <Subject 1> is on the left, facing <Subject 2> at two steps, turns his hips and steps around to <Subject 2>'s front-left, and cuts diagonally downward. <Subject 2> cannot guard in time and takes the cut; the cloth on his left shoulder tears and a thin line of blood shows, so he staggers back two steps with his weight on the right leg, injured shoulder still limited. <Subject 1> follows through with a finishing overhead chop along the full arc; <Subject 2> braces with his saber but it is knocked from his hands, and he falls onto his back along the line of force, water splashing on the wet stone, and does not get up.
 overall_soundscape: feet on wet stone, blade arcs cutting air, steel on steel with sparks, cloth tearing, a muffled grunt, rain, heavy breathing.
+non_diegetic_music: None.""",
+    # ── 新：墙体反弹 + 武器回收（ref2v）──────────────────────────────
+    """subject_definitions:
+<Subject 1> is the woman in <Picture 1>, short martial jacket, single saber in the right hand. Preserve face, hair, clothing, proportions.
+<Subject 2> is the man in <Picture 2>, sleeveless top, short staff in both hands. Preserve face, hair, clothing, proportions.
+<Subject 3> is the night alley in <Picture 3>, earthen walls as solid cover, packed-earth ground.
+summary:
+[reference generation] A 10-second alley duel: <Subject 1> knocks <Subject 2> into the wall, he rebounds with inherited momentum, loses the staff, then reclaims it before the finisher.
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - face, jacket, saber unchanged.
+<Subject 2> (appears in [Shot 2]): fully_preserved - face, sleeveless top, staff ownership tracked across drop and reclaim.
+<Subject 3> (appears in [Shot 3]): fully_preserved - walls and ground marks persist.
+detailed_description:
+[Shot 1] handheld follow, medium shot. <Subject 1> drives the rear foot, turns the waist, and closes from two steps to one with an overhead chop. <Subject 2> braces the staff across; the impact knocks him back into the solid earthen wall, momentum not yet spent, so he rebounds forward riding the residual force. They are still the same two fighters, same faces, same costumes and weapons.
+[Shot 2] At 00:02.200.low angle near the wall. <Subject 2> is on the right facing <Subject 1>, rides the wall rebound into a low sweep; <Subject 1> lifts a knee and jams with the saber spine, sparks fly, and the staff is knocked free — ownership leaves <Subject 2> to the packed earth. <Subject 2> stoops and reclaims the staff, so ownership returns to his hands; they are still the same two fighters, same faces, same costumes and weapons.
+[Shot 3] At 00:05.400.over-the-shoulder. <Subject 1> on the left faces <Subject 2> at one step, cuts diagonally; <Subject 2>'s guard is late after the stoop, takes the hit, and <Subject 1> finishes with a vertical chop along the line of force. <Subject 2> falls and does not get up; debris and wall scuff from the rebound stay in frame.
+overall_soundscape: feet on packed earth, staff thud on wall, steel on wood sparks, grunt, night wind.
 non_diegetic_music: None.""",
 ]
 
@@ -76,7 +141,7 @@ SEED_HORDE: List[str] = [
     """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 夜巷窄街，夯土地面，两侧土墙为实体。角色A是短打劲装持单刀的女性，开场居中，格(10,4)。战场20格宽8格高，可见目标约12个。
 integrated_multimodal_description:
 [Shot 1] handheld follow, medium shot。角色A后脚蹬地，踏步向前1格到格(9,4)，正前2格有两个目标，普攻「正劈」让刀走垂弧，劈中左侧目标肩头，因此目标侧倒出画，本秒击倒1个。角色A趁刀势回弹拧腰回身，仍是同一人、同一套服装与武器。
-[Shot 2] At 00:01.000.low angle，贴地跟刀。右侧贴身一个目标，角色A在格(9,4)朝向格(10,4)，拧腰发力出招式「回身旋转360挥砍」，刀走平圆扫中目标腰侧，因此目标倒退撞墙，本秒击倒1个。角色A随即收刀回到中位，仍是同一人、同一套服装与武器。
+[Shot 2] At 00:01.000.low angle，贴地跟刀。右侧贴身一个目标，角色A在格(9,4)朝向格(10,4)，拧腰发力出招式「回身旋转360挥砍」，刀走平圆扫中目标腰侧，因此目标倒退撞墙，本秒击倒1个。角色A随即收刀回到中位，攻击权准备交接向下一个目标，仍是同一人、同一套服装与武器。
 [Shot 3] At 00:02.000.wide shot 拉远交代位置。角色A在格(9,4)，格(5,4)附近圈内3个目标，蹬土墙借力跳4格落到格(5,4)，落地屈膝卸力后踏步出招式「横扫」走平弧，连续扫中2个目标，因此两个目标同时倒地。角色A紧接着上步逼近最后1个目标，终结技「过肩劈」走完整刀路，目标沿作用线倒地，不再起身，本场共击倒5个。
 overall_soundscape: 踏土、刀风、兵刃入体闷响、倒地、喘息、夜风。
 non_diegetic_music: None.""",

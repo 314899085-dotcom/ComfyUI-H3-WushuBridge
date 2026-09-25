@@ -1166,3 +1166,18 @@ def build_prompt(choreo: Choreography, spec: PromptSpec,
         # 六段壳：主字段是 detailed_description
         return head + body + "\n" + tail
     return head + body + "\n" + tail
+
+# ── BUNNY-inspired 逻辑链预设（轻量导出，不改 FightDirector API）──────────
+def list_logic_chain_presets():
+    """返回可用因果逻辑链短名（供 choreo_nodes / 文档调用）。"""
+    try:
+        from .logic_chains import CHOREO_CHAIN_PRESETS, chain_preset_catalog
+        return list(CHOREO_CHAIN_PRESETS), chain_preset_catalog()
+    except Exception:
+        return [], []
+
+
+def render_logic_chain_preset(name: str, lang: str = "zh", **kwargs):
+    """把命名逻辑链渲染成分镜段落文本。"""
+    from .logic_chains import render_chain_text
+    return render_chain_text(name, lang=lang, **kwargs)
