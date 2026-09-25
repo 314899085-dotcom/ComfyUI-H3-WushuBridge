@@ -176,6 +176,81 @@ h3lint 的八维（内容结构 / 运动节奏 / 音频 / 物理逻辑 / 人物�
 | H3 武打桥 降级预览 | 正例文本 → 负例文本 | 看训练对长什么样，调降级强度 |
 | H3 文本 token 段定位 | 两段 CONDITIONING → start/end | 参考图模式诊断：文本 token 落在哪一段 |
 | H3 武打桥 清空缓存 | — | 换权重后清显存缓存 |
+| **H3 武打 Laya 裁判（自定义规则）** | STRING + 规则 → score + pass + level + report | 内嵌 Laya 决策模型，rubric 五问 + 你的规则 |
+| **H3 武打 Laya 优化回路（排序+指方向）** | 原稿 + N 份候选 → best_text + score + direction | 候选稿打分排序，并挑出最该先修的一条 |
+
+---
+
+## 5.5 Laya 裁判（内嵌决策模型，免安装免服务）
+
+上面两个 Laya 节点把 **[Laya](https://github.com/NandhaKishorM/laya)**（本地、
+Apache-2.0、非自回归的决策模型）当"武打语义裁判"用。它**随插件一起装**：
+
+* **免 pip 安装**：Laya 本体是纯 Python、8 个文件、76KB，已内嵌在
+  `wushu_bridge/vendor/laya/`（依赖 numpy/torch/transformers 等 ComfyUI 本来就有）；
+* **免外挂服务**：进程内直接推理，不用另起 HTTP 服务、不用另配 venv；
+* **免联网**：权重从本地装配，跑的时候完全离线；
+* **用得上 GPU**：直接跑在 ComfyUI 的 torch 上（实测 RTX 3080，判断 0.7~2.3 秒/次）。
+
+### 装权重（一次性，约 1.4GB）
+
+```bash
+# 从本地 HuggingFace 缓存装配到 ComfyUI/models/wushu_bridge/laya/（不重新下载）
+python tools/setup_laya.py
+
+# 只看会做什么
+python tools/setup_laya.py --dry-run
+
+# 只要英文档（省 614MB）
+python tools/setup_laya.py --only english
+
+# 装完自检（确认能加载）
+python tools/setup_laya.py --verify
+```
+
+只装 `english` + `multilingual` 两档（武打裁判只用这两档；`typed-decisions`
+是给票据/工单那类业务 workflow 的，多占 840MB）。同盘会走硬链接，不额外占空间。
+
+### 自定义规则怎么写
+
+`custom_rules` 一行一条，`#` 开头是注释。分三种写法 —— 因为 Laya **只吃这三种题型**：
+
+```
+# 裸规则 → 是/否题（noul）
+命中之后必须能看到受力反馈或位移
+跳跃必须有依据，不能无来由起跳
+
+# 评分:问题|最差档|…|最好档  → 有序档位（score）
+评分:镜头调度是否具体|完全没写|很模糊|大概能看出|比较具体|非常具体且可执行
+
+# 选择:问题|选项1|选项2  → 选项题（choice）
+选择:这一段的收招应该怎么处理|直接停住|缓冲半步|顺势追击
+```
+
+### 这两类分数别混
+
+| 分 | 来源 | 用途 |
+|---|---|---|
+| **rubric 加权分**（节点输出的 `score`） | 固定五问等权：动作逻辑/招式过程/命中反馈/跳跃纪律/可拍性 | 门禁阈值看它（默认 0.62 = 小改可用） |
+| **自定义规则分**（报告里的「自定义规则」段） | 你写的规则 | 单独列出，不混进总分，免得随手加两条就把基准分带跑 |
+
+### 诚实说明：Laya 不写字
+
+Laya 是非自回归决策模型，**只回答 choice / score / noul 三类问题，不生成文本**。
+所以这两个节点做的是**判断、排序、指方向**，"改稿"仍由你或文本模型出：
+
+```
+体检(h3lint) 找出待修项 ──► Laya 挑"最该先修的一条"（正反双序防位置偏置）
+你/文本模型 按方向出 N 份候选 ──► Laya 逐一打分排序 ──► 取最高分那份
+```
+
+让 8 亿参数的非自回归模型去写字只会得到噪声 —— 分工这样才是对的。
+
+> 两条实测教训写进了实现里，别绕开：
+> ① **choice 有严重位置偏置**：同一材料把选项顺序反过来问它会改答案，四个截然不同的
+> 状态甚至全选第一个（置信还 0.89~0.93）→ 一律正反双序，两次不一致就按默认顺序走；
+> ② **ordinal score 是最弱的 primitive**：好稿/烂稿在"动作逻辑"这一问上几乎不分甚至反向，
+> 判别力主要来自 noul 那几条 → 门禁用加权分，别单看某一问。
 
 ---
 
@@ -304,6 +379,15 @@ ComfyUI-H3-WushuBridge/
 桥的**应用公式与 MLP 结构**参考社区 `MiniMax-H3-Semantic-Bridge`（可加载其权重做对照）；
 武打规则判据来自用户既有的 h3lint 规则体系。MiniMax H3 与其衍生权重受上游
 MiniMax H3 Community License 约束。
+
+### 内嵌的第三方组件
+
+| 组件 | 版本 | 许可证 | 位置 |
+|---|---|---|---|
+| [Laya](https://github.com/NandhaKishorM/laya)（Convai Innovations） | 0.3.5 | **Apache-2.0** | `wushu_bridge/vendor/laya/`（原样拷贝，未修改；许可全文见同目录 `LICENSE`） |
+
+Laya 的**模型权重不随本仓库分发**：由用户在首次使用时自行下载，或用
+`tools/setup_laya.py` 从本地缓存装配。详见 `wushu_bridge/vendor/README.md`。
 
 ---
 
