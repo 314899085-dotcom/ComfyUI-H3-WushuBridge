@@ -307,10 +307,19 @@ IDENTITY_LOCK_EN: List[str] = [
 SPATIAL_OPEN_ZH: List[str] = [
     "在左侧", "在右侧", "画面左", "画面右", "间距", "朝向", "面向", "格",
     "左前方", "右后方",
+    "@xyz=", "xyz=(", "坐标锁定", "位于 xyz=", "坐标(",
 ]
 SPATIAL_OPEN_EN: List[str] = [
     "on the left", "on the right", "steps of distance", "facing",
     "at two steps", "at one step", "front-left", "rear-right",
+    "@xyz=", "xyz=(", "coords locked", "at xyz=", "XYZ(",
+]
+
+XYZ_LOCK_ZH: List[str] = [
+    "@xyz=", "xyz=(", "坐标锁定", "位于 xyz=", "坐标(",
+]
+XYZ_LOCK_EN: List[str] = [
+    "@xyz=", "xyz=(", "coords locked", "at xyz=", "XYZ(",
 ]
 
 SPELL_FEEDBACK_ZH: List[str] = [
@@ -350,6 +359,7 @@ SPELL: List[str] = SPELL_ZH + SPELL_EN
 SPELL_TARGET: List[str] = SPELL_TARGET_ZH + SPELL_TARGET_EN
 IDENTITY_LOCK: List[str] = IDENTITY_LOCK_ZH + IDENTITY_LOCK_EN
 SPATIAL_OPEN: List[str] = SPATIAL_OPEN_ZH + SPATIAL_OPEN_EN
+XYZ_LOCK: List[str] = XYZ_LOCK_ZH + XYZ_LOCK_EN
 SPELL_FEEDBACK: List[str] = SPELL_FEEDBACK_ZH + SPELL_FEEDBACK_EN
 
 # 攻击动作词（用于"具体描写 -> 空泛形容"的定位）
@@ -468,6 +478,7 @@ _SLOT_BUCKETS: Dict[str, List[str]] = {
     "spell_target": SPELL_TARGET,
     "identity_lock": IDENTITY_LOCK,
     "spatial_open": SPATIAL_OPEN,
+    "xyz_lock": XYZ_LOCK,
     "spell_feedback": SPELL_FEEDBACK,
 }
 

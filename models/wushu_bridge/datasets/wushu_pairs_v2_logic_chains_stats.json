@@ -1,36 +1,37 @@
 {
   "pairs_path": "models/wushu_bridge/datasets/wushu_pairs_v2_logic_chains.jsonl",
   "stats": {
-    "count": 414,
+    "count": 615,
     "sources": {
-      "corpus": 270,
-      "seed": 144
+      "corpus": 390,
+      "seed": 225
     },
-    "mean_bad_score": 0.4067,
-    "mean_good_score": 0.5412,
-    "mean_gap": 0.1345,
+    "mean_bad_score": 0.4207,
+    "mean_good_score": 0.5407,
+    "mean_gap": 0.1199,
     "op_usage": {
-      "jump_orphan": 235,
-      "spell_miss_target": 190,
-      "facing_break": 136,
-      "defense": 130,
-      "force_chain": 117,
-      "moves": 112,
-      "chain_break": 108,
-      "teleport_cut": 93,
-      "occlusion": 92,
-      "feedback": 81,
-      "facing": 75,
+      "jump_orphan": 308,
+      "spell_miss_target": 255,
+      "facing_break": 210,
+      "defense": 166,
+      "teleport_cut": 163,
+      "moves": 161,
+      "chain_break": 154,
+      "force_chain": 148,
+      "occlusion": 135,
+      "spell_no_feedback": 115,
+      "feedback": 110,
+      "distance": 107,
+      "identity_drift": 103,
+      "facing": 90,
+      "ending": 89,
+      "ownership": 72,
       "contact": 68,
-      "spell_no_feedback": 64,
-      "identity_drift": 63,
-      "ending": 58,
-      "distance": 55,
-      "ownership": 53,
-      "momentum": 37,
-      "holes": 33,
-      "state_carry": 19,
-      "pursuit": 19
+      "xyz_drift": 65,
+      "holes": 61,
+      "momentum": 46,
+      "state_carry": 23,
+      "pursuit": 20
     }
   },
   "ops": [
@@ -53,7 +54,8 @@
     "spell_miss_target",
     "identity_drift",
     "teleport_cut",
-    "spell_no_feedback"
+    "spell_no_feedback",
+    "xyz_drift"
   ],
   "chains": [
     {
@@ -325,6 +327,7 @@
       "slots": [
         "facing",
         "distance",
+        "xyz",
         "force",
         "moves",
         "defense",
@@ -371,7 +374,25 @@
       "slots": [
         "facing",
         "distance",
-        "occlusion"
+        "occlusion",
+        "xyz"
+      ]
+    },
+    {
+      "name": "xyz_coord_duel",
+      "label_zh": "XYZ坐标对决：开场锁坐标→步法更新→切镜重申→法术沿向量",
+      "label_en": "XYZ coord duel: lock → footwork update → cut restate → spell along vector",
+      "family": "fight",
+      "beats": 4,
+      "slots": [
+        "facing",
+        "distance",
+        "xyz",
+        "force",
+        "moves",
+        "causal",
+        "occlusion",
+        "feedback"
       ]
     }
   ],

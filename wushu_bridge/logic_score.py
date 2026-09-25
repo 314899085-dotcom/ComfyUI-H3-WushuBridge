@@ -342,8 +342,54 @@ def score_logic(text: str, mode: str = "final", lang: Optional[str] = None) -> L
         # 缺空间锚重罚
         spat_score = min(spat_score, 0.45) if spat_n == 0 else spat_score
     checks.append(LogicCheck(
-        "spatial-lock", "每镜开头重申左/右/间距/朝向", 1.2, spat_score,
+        "spatial-lock", "每镜开头重申左/右/间距/朝向（优先 xyz 坐标锚）", 1.2, spat_score,
         f"{spat_n}/{len(shots)} 拍开头有空间锚",
+    ))
+
+    # 16e2 xyz 坐标锁定：多镜同主语大跳无位移则罚；对决有朝向/间距时偏好 xyz
+    from .xyz_coords import parse_xyz_mentions, coords_consistent, has_footwork
+    xyz_shots = []
+    for s in shots:
+        ms = parse_xyz_mentions(s)
+        xyz_shots.append(ms)
+    n_with = sum(1 for ms in xyz_shots if ms)
+    xyz_score = 0.55  # 中性底（非对决不强求）
+    detail = "无 xyz 标注"
+    if shots and n_with:
+        # 有 xyz：按覆盖率加分
+        xyz_score = 0.45 + 0.55 * (n_with / len(shots))
+        detail = f"{n_with}/{len(shots)} 拍写了 xyz"
+        # 同主语跨镜大跳无位移 → 重罚
+        from collections import defaultdict
+        by_sub = defaultdict(list)
+        for si, ms in enumerate(xyz_shots):
+            for m in ms:
+                sub = m.get("subject") or f"anon{si}"
+                by_sub[sub].append((si, m["x"], m["y"], m["z"], shots[si]))
+        jump_pen = 0.0
+        jump_n = 0
+        for sub, seq in by_sub.items():
+            for (i0, x0, y0, z0, t0), (i1, x1, y1, z1, t1) in zip(seq, seq[1:]):
+                dist = ((x1-x0)**2 + (y1-y0)**2 + (z1-z0)**2) ** 0.5
+                if dist > 2.0 and not (has_footwork(t0) or has_footwork(t1)):
+                    jump_n += 1
+                    jump_pen += min(0.35, dist / 10.0)
+        if jump_n:
+            xyz_score = max(0.05, xyz_score - jump_pen)
+            detail += f"；无位移大跳 {jump_n} 次"
+    else:
+        # 无 xyz：若对决特征（朝向/间距）齐全则软罚
+        duelish = False
+        if shots:
+            face_n = sum(1 for s in shots if _shot_has(s, lexicons.FACING_LOCK) or _shot_has(s, lexicons.FACING))
+            dist_n = sum(1 for s in shots if _shot_has(s, lexicons.DISTANCE))
+            if face_n >= 1 and dist_n >= 1 and len(shots) >= 2:
+                duelish = True
+                xyz_score = 0.35
+                detail = "多镜对决有朝向/间距但缺 xyz（建议补坐标锁定）"
+    checks.append(LogicCheck(
+        "xyz-lock", "显式 xyz 坐标锁定（跨镜一致，位移才更新）", 1.3, xyz_score,
+        detail,
     ))
 
     # 16f 法术击中须有反馈

@@ -38,6 +38,7 @@
 * identity_drift 切镜后改发型/服装措辞或去掉同一张脸锁
 * teleport_cut 去掉切镜开头的位置重申（模拟瞬移）
 * spell_no_feedback 法术击中后抽掉物理反馈
+* xyz_drift 扰动/剥掉 xyz 坐标锁定（左右互换、跳 Z、无位移瞬移）
 """
 
 from __future__ import annotations
@@ -753,6 +754,17 @@ def _teleport_cut(text: str, rng: random.Random) -> Tuple[str, bool]:
             before = new
             new = spatial_zh.sub("", new)
             new = spatial_en.sub("", new)
+            # 若有 xyz 坐标，一并剥离/扰动（切镜瞬移差向量）
+            from .xyz_coords import parse_xyz_mentions, strip_xyz, mutate_xyz
+            if parse_xyz_mentions(new):
+                if rng.random() < 0.55:
+                    new2, did = mutate_xyz(new, rng)
+                    if did:
+                        new, changed = new2, True
+                else:
+                    new2 = strip_xyz(new)
+                    if new2 != new:
+                        new, changed = new2, True
             # 额外抽掉空间开场词所在短句
             if rng.random() < 0.8:
                 sents = _sentences(new)
@@ -808,6 +820,23 @@ def _spell_no_feedback(text: str, rng: random.Random) -> Tuple[str, bool]:
     if not did:
         return _drop_sentences_with(text, lexicons.SPELL_FEEDBACK, 0.1, rng)
     return new, did
+
+
+
+def _xyz_drift(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """CRITICAL：扰动或剥掉显式 xyz 坐标锁定（左右互换 / 跳 Z / 瞬移 / 整段剥离）。"""
+    from .xyz_coords import parse_xyz_mentions, mutate_xyz, strip_xyz
+
+    mentions = parse_xyz_mentions(text)
+    if not mentions:
+        # 无 xyz 时不强行注入；算子未命中
+        return text, False
+    # 60% 扰动数值，40% 全部剥掉
+    if rng.random() < 0.6:
+        out, did = mutate_xyz(text, rng)
+        return out, did
+    out = strip_xyz(text)
+    return out, out != text
 
 
 @dataclass
@@ -869,8 +898,10 @@ _OPS: List[DegradeOp] = [
               lambda t, r, lv: _identity_drift(t, r)),
     DegradeOp("teleport_cut", "去掉切镜空间锚点（模拟瞬移）", 1.1,
               lambda t, r, lv: _teleport_cut(t, r)),
-    DegradeOp("spell_no_feedback", "法术击中后抽掉物理反馈", 1.1,
+        DegradeOp("spell_no_feedback", "法术击中后抽掉物理反馈", 1.1,
               lambda t, r, lv: _spell_no_feedback(t, r)),
+    DegradeOp("xyz_drift", "扰动/剥掉 xyz 坐标锁定（瞬移差向量）", 1.2,
+              lambda t, r, lv: _xyz_drift(t, r)),
 ]
 OPS_BY_KEY: Dict[str, DegradeOp] = {op.key: op for op in _OPS}
 ALL_OP_KEYS: List[str] = [op.key for op in _OPS]
@@ -884,6 +915,7 @@ HIGH_DYNAMIC_OPS: List[str] = [
 CRITICAL_FAILURE_OPS: List[str] = [
     "facing_break", "jump_orphan", "spell_miss_target",
     "identity_drift", "teleport_cut", "spell_no_feedback",
+    "xyz_drift",
 ]
 # 默认档案：经典逻辑 + 高动态 + 六大翻车
 DEFAULT_OPS: List[str] = LOGIC_OPS + HIGH_DYNAMIC_OPS + CRITICAL_FAILURE_OPS

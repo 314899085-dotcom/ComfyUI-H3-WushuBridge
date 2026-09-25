@@ -26,6 +26,7 @@
 
 v1.1 起额外覆盖 BUNNY 启发的高动态家族：缴械回收、撞墙反弹、遮挡再识别、
 追击刹停再交手、1v2 交接、伤势跨镜继承、湿街追逐（武打味）。
+v1.1.2 起：显式 xyz 坐标锁定（角色A@xyz=(-2,0,0) / <Subject 1> at xyz=…）。
 """
 
 from __future__ import annotations
@@ -100,8 +101,8 @@ non_diegetic_music: None.""",
     # ── 9. 面对面交手（朝向锁，防背对空砍）──────────────────────────
     """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 青砖演武场，正午硬光。角色A是青衫持剑男性，画面左侧。角色B是灰袍持刀男性，画面右侧。两人开场已面对面，刀尖相抵。
 integrated_multimodal_description:
-[Shot 1] medium shot, handheld follow。角色A在左侧与角色B面对面，间距2格，刀尖指向对方胸口。角色A后脚蹬砖转腰，「直刺」朝对方刺出。角色B举刀斜挡，刃对刃出火星，因此后退半步，两人始终面对面。仍是同一张脸、同一套服装与武器。
-[Shot 2] At 00:02.200.over-the-shoulder。接上一镜：角色A仍在左侧朝向角色B，角色B在右侧面向角色A，间距1格，没有背对。角色B「撩刀」朝对方反击，角色A刀脊磕住，因此虎口发麻。仍是同一张脸、同一套服装与武器。
+[Shot 1] medium shot, handheld follow。坐标锁定：角色A@xyz=(-2,0,0) 与 角色B@xyz=(2,0,0) 面对面，间距2格，刀尖指向对方胸口。角色A后脚蹬砖转腰，「直刺」朝对方刺出。角色B举刀斜挡，刃对刃出火星，因此后退半步，两人始终面对面。仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.200.over-the-shoulder。接上一镜：角色A@xyz=(-2,0,0) 仍朝向 角色B@xyz=(2,0,0)，间距1格，切镜后重申相同 xyz，没有背对。角色B「撩刀」朝对方反击，角色A刀脊磕住，因此虎口发麻。仍是同一张脸、同一套服装与武器。
 [Shot 3] At 00:05.400.斜侧推进。角色A在左侧面对面朝向角色B，间距1格，终结技「斜劈」朝对方肩线压下，角色B硬吃踉跄，于是沿作用线单膝跪地，不再起身。
 overall_soundscape: 踏砖、兵刃相交、闷哼、粗喘。
 non_diegetic_music: None.""",
@@ -124,10 +125,28 @@ non_diegetic_music: None.""",
     # ── 12. 切镜身份+空间锁（无瞬移无换人）─────────────────────────
     """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 雨夜长街，湿石反光，灯笼柱为实体。角色A是黑衣持太刀男性，黑发披散。角色B是靛蓝袍持单刀男性，灰发束髻。
 integrated_multimodal_description:
-[Shot 1] handheld follow, medium shot。角色A在左侧面向角色B，角色B在右侧，间距2格。角色A蹬湿石「点刺」朝对方刺出，角色B斜挡出火星，因此退半步。两人仍是同一张脸、同一套服装与武器。
-[Shot 2] At 00:02.100.low angle。接上一镜：角色A仍在左侧朝向角色B，角色B仍在右侧面向角色A，间距1格，位置连续没有瞬移。角色B「撩刀」朝对方反击，角色A刀脊磕住。仍是同一张脸、同一套服装与武器，黑发与靛蓝袍未变人。
+[Shot 1] handheld follow, medium shot。坐标锁定：角色A@xyz=(-2,0,0) 面向 角色B@xyz=(2,0,0)，间距2格。角色A蹬湿石「点刺」朝对方刺出，角色B斜挡出火星，因此退半步。两人仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.100.low angle。接上一镜：角色A@xyz=(-2,0,0) 仍朝向 角色B@xyz=(2,0,0)，间距1格，切镜后重申相同 xyz，位置连续没有瞬移。角色B「撩刀」朝对方反击，角色A刀脊磕住。仍是同一张脸、同一套服装与武器，黑发与靛蓝袍未变人。
 [Shot 3] At 00:05.400.over-the-shoulder。接上一镜：角色A在左侧，角色B在右侧，间距1格，朝向面对面。角色A终结技「过肩劈」朝对方压下，角色B硬吃仰面倒地，于是不再起身。湿石仍湿。
 overall_soundscape: 踏湿石、兵刃、雨声、闷哼、粗喘。
+non_diegetic_music: None.""",
+
+    # ── 13. XYZ 坐标锁定对决（中文）──────────────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 青砖演武场，硬光。角色A是青衫持剑男性。角色B是灰袍持刀男性。
+integrated_multimodal_description:
+[Shot 1] medium shot, handheld follow。坐标锁定：角色A@xyz=(-2,0,0) 面向 角色B@xyz=(2,0,0)，间距2格，刀尖相抵。角色A后脚蹬砖转腰，「直刺」朝对方刺出。角色B举刀斜挡，刃对刃出火星，因此后退半步，两人始终面对面。仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.200.over-the-shoulder。接上一镜：角色A@xyz=(-2,0,0) 仍面向 角色B@xyz=(2,0,0)，间距1格，切镜后重申相同 xyz，没有瞬移。角色B「撩刀」朝对方反击，角色A刀脊磕住，因此虎口发麻。仍是同一张脸、同一套服装与武器。
+[Shot 3] At 00:05.400.斜侧推进。角色A上步，xyz 更新为(-1,0,0)；角色B撤步至(1,0,0)，仅在位移动作后更新坐标。终结技「斜劈」朝对方肩线压下，角色B硬吃踉跄，于是沿作用线单膝跪地，不再起身。
+overall_soundscape: 踏砖、兵刃相交、闷哼、粗喘。
+non_diegetic_music: None.""",
+
+    # ── 14. XYZ coords locked duel (EN) ───────────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. Brick yard, hard noon light. Fighter A in cyan robe with sword. Fighter B in grey robe with saber.
+integrated_multimodal_description:
+[Shot 1] medium shot, handheld follow. coords locked: Fighter A@xyz=(-2,0,0) facing Fighter B@xyz=(2,0,0) at two steps, tips touching. A drives the rear foot into a straight thrust. B parries; sparks fly, so B yields half a step. They stay face to face. Same faces, same costumes and weapons.
+[Shot 2] At 00:02.200.over-the-shoulder. Continuing: Fighter A@xyz=(-2,0,0) still facing Fighter B@xyz=(2,0,0) at one step — restate same xyz after the cut; no teleport. B flicks upward; A jams with the spine, grip goes numb. Same faces, same costumes and weapons.
+[Shot 3] At 00:05.400.oblique push-in. A steps in, xyz updates to (-1,0,0); B retreats to (1,0,0) — update only after explicit footwork. Finisher diagonal cut; B takes it, drops to one knee along the line of force, and does not get up.
+overall_soundscape: brick feet, steel clash, grunt, breath.
 non_diegetic_music: None.""",
 
 ]
@@ -185,6 +204,24 @@ detailed_description:
 overall_soundscape: palm-force whoosh, stone chips, cloth scorch, grunt, breath.
 non_diegetic_music: None.""",
 
+
+    # ── Ref2V: XYZ coords locked face-to-face (EN) ───────────────────
+    """subject_definitions:
+<Subject 1> is the man in <Picture 1>, cyan robe, straight sword. Preserve face, hair, clothing, proportions.
+<Subject 2> is the man in <Picture 2>, grey robe, saber. Preserve face, hair, clothing, proportions.
+<Subject 3> is the brick yard in <Picture 3>, hard noon light, solid ground.
+summary:
+[reference generation] A 10-second coords-locked duel: <Subject 1> at xyz=(-2,0,0) faces <Subject 2> at xyz=(2,0,0); after cuts the same xyz is restated; footwork alone updates coords.
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - face, robe, sword unchanged.
+<Subject 2> (appears in [Shot 2]): fully_preserved - face, robe, saber unchanged.
+<Subject 3> (appears in [Shot 3]): fully_preserved - yard and light persist.
+detailed_description:
+[Shot 1] handheld follow, medium shot. coords locked: <Subject 1> at xyz=(-2,0,0) facing <Subject 2> at xyz=(2,0,0) at two steps. <Subject 1> drives the rear foot into a thrust; <Subject 2> parries with sparks and yields half a step. Same faces, same costumes and weapons.
+[Shot 2] At 00:02.200.over-the-shoulder. Continuing: <Subject 1> at xyz=(-2,0,0) still facing <Subject 2> at xyz=(2,0,0) — restate same xyz after the cut; no teleport. <Subject 2> counters; spine jam. Same faces, same costumes and weapons.
+[Shot 3] At 00:05.400.oblique push-in. <Subject 1> steps in, xyz updates to (-1,0,0); <Subject 2> retreats to (1,0,0) — update only after explicit footwork. Finisher drops <Subject 2> to one knee; he does not get up.
+overall_soundscape: brick feet, steel, grunt, breath.
+non_diegetic_music: None.""",
 ]
 
 SEED_HORDE: List[str] = [

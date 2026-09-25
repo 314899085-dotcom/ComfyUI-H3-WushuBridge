@@ -25,7 +25,7 @@ SLOT_TAGS = (
     "force", "distance", "defense", "contact", "feedback", "moves",
     "ownership", "occlusion", "facing", "momentum", "pursuit",
     "state_carry", "cover", "ricochet", "env_continuity", "aerial",
-    "handoff", "causal",
+    "handoff", "causal", "xyz",
 )
 
 
@@ -374,9 +374,9 @@ CHAINS: Dict[str, ChainTemplate] = {
         family="fight",
         notes_zh="每拍明确面对面/朝向对方，禁止背对空砍。",
         beats=[
-            _b("face", ["facing", "distance"],
-               "{a}在{side_a}侧与{b}面对面，间距{d0}格，刀尖指向对方胸口",
-               "{a} on the {side_a} stands face to face with {b} at {d0} steps, tip aimed at the chest"),
+            _b("face", ["facing", "distance", "xyz"],
+               "{a}@xyz={xyz_a}在{side_a}侧与{b}@xyz={xyz_b}面对面，间距{d0}格，刀尖指向对方胸口",
+               "{a} at xyz={xyz_a} on the {side_a} stands face to face with {b} at xyz={xyz_b}, {d0} steps, tip aimed at the chest"),
             _b("exchange", ["force", "moves", "defense", "contact", "facing"],
                "{a}转腰「{move}」朝对方劈下，{b}举刀斜挡，两人始终面对面",
                "{a} turns into「{move}」toward the opponent; {b} parries; they stay face to face"),
@@ -425,14 +425,37 @@ CHAINS: Dict[str, ChainTemplate] = {
         label_en="Cross-shot identity + spatial locks",
         family="behavior",
         beats=[
-            _b("s1", ["facing", "distance", "occlusion"],
-               "{a}在左侧面向{b}，{b}在右侧，间距{d0}格，两人仍是同一张脸、同一套服装与武器",
-               "{a} on the left facing {b} on the right at {d0} steps; same faces, same costumes and weapons"),
-            _b("s2", ["facing", "distance", "occlusion"],
-               "接上一镜：{a}仍在左侧朝向{b}，间距{d1}格，没有瞬移换位，仍是同一张脸、同一套服装与武器",
-               "Continuing: {a} still on the left facing {b} at {d1} steps — no teleport swap; same faces, same costumes and weapons"),
+            _b("s1", ["facing", "distance", "occlusion", "xyz"],
+               "{a}@xyz={xyz_a}在左侧面向{b}@xyz={xyz_b}，间距{d0}格，两人仍是同一张脸、同一套服装与武器",
+               "{a} at xyz={xyz_a} on the left facing {b} at xyz={xyz_b} on the right at {d0} steps; same faces, same costumes and weapons"),
+            _b("s2", ["facing", "distance", "occlusion", "xyz"],
+               "接上一镜：{a}@xyz={xyz_a}仍在左侧朝向{b}@xyz={xyz_b}，间距{d1}格，没有瞬移换位，仍是同一张脸、同一套服装与武器；坐标锁定重申相同 xyz",
+               "Continuing: {a} at xyz={xyz_a} still on the left facing {b} at xyz={xyz_b} at {d1} steps — no teleport swap; coords locked, same xyz restated; same faces, same costumes and weapons"),
         ],
     ),
+
+    "xyz_coord_duel": ChainTemplate(
+        name="xyz_coord_duel",
+        label_zh="XYZ坐标对决：开场锁坐标→步法更新→切镜重申→法术沿向量",
+        label_en="XYZ coord duel: lock → footwork update → cut restate → spell along vector",
+        family="fight",
+        notes_zh="每镜显式 xyz；切镜重申；仅位移动作后更新；法术沿 A→B 向量。",
+        beats=[
+            _b("open", ["facing", "distance", "xyz"],
+               "坐标锁定：{a}@xyz={xyz_a} 面向 {b}@xyz={xyz_b}，间距{d0}格，刀尖相抵",
+               "coords locked: {a} at xyz={xyz_a} facing {b} at xyz={xyz_b}, {d0} steps, tips touching"),
+            _b("footwork", ["force", "moves", "xyz", "causal"],
+               "{a}上步逼近，xyz 更新为{xyz_a2}；{b}撤步至{xyz_b2}，因此间距收到{d1}格，两人仍面对面",
+               "{a} steps in, xyz updates to {xyz_a2}; {b} retreats to {xyz_b2}, so distance closes to {d1} steps, still face to face"),
+            _b("cut_restate", ["occlusion", "xyz", "facing"],
+               "切镜后重申：{a}@xyz={xyz_a2} 面向 {b}@xyz={xyz_b2}，仍是同一张脸、同一套服装与武器，坐标未瞬移",
+               "After cut restate: {a} at xyz={xyz_a2} facing {b} at xyz={xyz_b2}, same faces, same costumes and weapons — no coord teleport"),
+            _b("spell_vector", ["force", "xyz", "feedback"],
+               "{a}后脚蹬地，掌力法术沿向量射向 {b}@xyz={xyz_b2} 胸口，击中后{b}踉跄倒退，衣料灼痕",
+               "{a} drives the rear foot and casts palm-force along the vector toward {b} at xyz={xyz_b2} chest; hit staggers {b} with a scorch mark"),
+        ],
+    ),
+
 }
 
 
@@ -444,11 +467,13 @@ DEFAULT_SCENE = {
     "ground": "湿石板", "wall": "土墙", "cover": "灯笼柱",
     "side_a": "左", "side_b": "右", "side_c": "右后方",
     "d0": "2", "d1": "1", "move": "过肩劈", "finisher": "斜劈",
+    "xyz_a": "(-2,0,0)", "xyz_b": "(2,0,0)", "xyz_a2": "(-1,0,0)", "xyz_b2": "(1,0,0)",
 }
 DEFAULT_SCENE_EN = {
     "ground": "wet stone", "wall": "earthen wall", "cover": "lantern post",
     "side_a": "left", "side_b": "right", "side_c": "rear-right",
     "d0": "2", "d1": "1", "move": "overhead chop", "finisher": "diagonal slash",
+    "xyz_a": "(-2,0,0)", "xyz_b": "(2,0,0)", "xyz_a2": "(-1,0,0)", "xyz_b2": "(1,0,0)",
 }
 
 
@@ -533,6 +558,7 @@ _SLOT_TO_BUCKET = {
     "aerial": "aerial",
     "handoff": "handoff",
     "causal": "causal",
+    "xyz": "xyz_lock",
 }
 
 

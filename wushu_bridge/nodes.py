@@ -456,7 +456,7 @@ class H3WushuBuildDataset:
                 "corpus_path": ("STRING", {"default": "", "multiline": False,
                                            "tooltip": "你自己的提示词库：文件、目录或 ; 分隔的多个路径（只读，不会被修改）"}),
                 "ops": ("STRING", {"default": "", "multiline": False,
-                                   "tooltip": "降级算子，逗号分隔；留空=DEFAULT_OPS（经典+高动态+六大翻车：facing_break,jump_orphan,spell_miss_target,identity_drift,teleport_cut,spell_no_feedback…）"}),
+                                   "tooltip": "降级算子，逗号分隔；留空=DEFAULT_OPS（经典+高动态+六大翻车：facing_break,jump_orphan,spell_miss_target,identity_drift,teleport_cut,spell_no_feedback,xyz_drift…）"}),
                 "rejected_csv": ("STRING", {"default": "", "multiline": False,
                                             "tooltip": "LoRA 打标表 metadata.csv（列含 video,prompt）；配合 rejected_dir 挖出真实负例"}),
                 "rejected_dir": ("STRING", {"default": "", "multiline": False,

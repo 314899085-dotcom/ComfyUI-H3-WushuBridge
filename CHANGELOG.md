@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.2 — XYZ 坐标锁定（角色站位）
+
+### Added
+- 坐标约定：相机相对地面系 X 左(−)/右(+)、Y 近(−)/远(+)、Z 离地（0=站立）；单位「步」
+- `wushu_bridge/xyz_coords.py`：解析 / 格式化 / 一致性 / 剥离 / 扰动
+- 词表 `XYZ_LOCK_*`；`SPATIAL_OPEN` 纳入 xyz 短语；槽位 `xyz_lock`
+- 降级 CRITICAL：`xyz_drift`（权重 1.2）；`teleport_cut` 顺带剥离/扰动 xyz
+- 评分：`xyz-lock`（权重 1.3）；`spatial-lock` 说明优先 xyz 锚
+- 逻辑链：`xyz_coord_duel`；`face_to_face_duel` / `cross_shot_identity_space` 补 `@xyz=`
+- 种子：T2V 中英各 +1，Ref2V +1；既有面对面/切镜种子补 xyz
+- 文档：`docs/逻辑链说明.md` §0 与「XYZ 坐标约定」
+
+### Unchanged
+- safetensors 仍为 v1（需本机 H3 CLIP 重训）
+
 ## v1.1.1 — H3 六大翻车差向量（优先）
 
 ### Added

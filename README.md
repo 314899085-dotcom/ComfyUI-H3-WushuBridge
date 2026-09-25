@@ -1,6 +1,6 @@
 # ComfyUI-H3-WushuBridge · MiniMax H3 武打语义逻辑翻译桥
 
-> **v1.1.1**（逻辑链 + 六大翻车差向量）：完整打斗/行为因果弧 + BUNNY 风格高动态降级族；TEXT 对见 `wushu_pairs_v2_logic_chains.jsonl`。权重仍为 v1，需本机 H3 CLIP 重训。
+> **v1.1.2**（XYZ 坐标锁定 + 逻辑链 + 六大翻车差向量）：完整打斗/行为因果弧 + BUNNY 风格高动态降级族；TEXT 对见 `wushu_pairs_v2_logic_chains.jsonl`。权重仍为 v1，需本机 H3 CLIP 重训。
 
 **中文** | [English](#english)
 
@@ -388,7 +388,7 @@ Laya 是非自回归决策模型，**只回答 choice / score / noul 三类问�
 * TEXT 对：`models/wushu_bridge/datasets/wushu_pairs_v2_logic_chains.jsonl`
 * 中文说明：[`docs/逻辑链说明.md`](docs/逻辑链说明.md)
 
-**六大实测翻车（优先差向量）**：无因跳跃、未面对面、法术打空气、切镜换人/瞬移、空间锚缺失、法术击中无反馈 —— 见 [`docs/逻辑链说明.md`](docs/逻辑链说明.md) §0；算子 `facing_break`/`jump_orphan`/`spell_miss_target`/`identity_drift`/`teleport_cut`/`spell_no_feedback`。
+**六大实测翻车 + XYZ 坐标锁**：无因跳跃、未面对面、法术打空气、切镜换人/瞬移、空间锚缺失（**优先显式 `xyz=`**）、法术击中无反馈 —— 见 [`docs/逻辑链说明.md`](docs/逻辑链说明.md) §0 /「XYZ 坐标约定」；算子 `facing_break`/`jump_orphan`/`spell_miss_target`/`identity_drift`/`teleport_cut`/`spell_no_feedback`/`xyz_drift`。
 
 **权重**：随包的 `wushu_bridge_wushu_v1.safetensors` / `wushu_jev_wushu_v1.safetensors` **未在本版重训**。
 拉取后请在本机 ComfyUI（H3 CLIP 5120-d）按 `docs/训练流程.md` →「v1.1 逻辑链补训」重建数据集并训 v2 权重。
