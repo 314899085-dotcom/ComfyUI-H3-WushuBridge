@@ -896,3 +896,28 @@ from .choreo_nodes import (  # noqa: E402
 
 NODE_CLASS_MAPPINGS.update(_CHOREO_NODES)
 NODE_DISPLAY_NAME_MAPPINGS.update(_CHOREO_NAMES)
+
+# ── Laya 裁判 / 优化回路（内嵌 Laya 决策模型，本地推理）──────────────────────
+# 同 choreo 的理由放在最后更新：laya_nodes 依赖 laya_runtime，而 laya_runtime
+# 只在真正调用时才 import 内嵌的 laya 包，所以引入不会拖慢插件启动。
+from .laya_nodes import (  # noqa: E402
+    NODE_CLASS_MAPPINGS as _LAYA_NODES,
+    NODE_DISPLAY_NAME_MAPPINGS as _LAYA_NAMES,
+)
+
+NODE_CLASS_MAPPINGS.update(_LAYA_NODES)
+NODE_DISPLAY_NAME_MAPPINGS.update(_LAYA_NAMES)
+
+
+# 这里**不再做节点可见性过滤**：``NODE_CLASS_MAPPINGS`` 是内部全量表，
+# 契约测试（tests/test_comfyui_contract.py）要靠它盯住每个节点的接口。
+# "菜单里只显示常用节点"的过滤放在插件入口 ``__init__.py`` —— 那才是
+# ComfyUI 真正读取映射的边界。见该文件里的 SETUP_ONLY_NODES。
+SETUP_ONLY_NODES = frozenset({
+    "H3WushuBuildDataset",     # 用 H3 文本编码器建数据集
+    "H3WushuHarvestPair",      # 从真实 CONDITIONING 采训练对
+    "H3WushuTrainBridge",      # 训练残差桥
+    "H3WushuTrainJevHead",     # 训练 JEV 评分头
+    "H3WushuDegradePreview",   # 降级预览（造训练对用）
+    "H3WushuLocateTextSpan",   # 参考图模式的 token 段定位（诊断）
+})

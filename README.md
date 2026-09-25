@@ -75,6 +75,36 @@ ComfyUI/models/wushu_bridge/datasets/   ← 训练数据集 *.npz
 python ComfyUI/custom_nodes/ComfyUI-H3-WushuBridge/tools/selftest.py
 ```
 
+### 菜单里只显示常用节点
+
+插件一共 11 个节点，但**日常出片只用 5 个**，所以默认只把这 5 个交给 ComfyUI：
+
+| 默认显示（在用） | 用途 |
+|---|---|
+| H3 武打语义逻辑桥 | 接在 conditioning 之间，把武打逻辑写进条件空间 |
+| H3 武打提示词体检 | h3lint 八维规则体检（纯 CPU） |
+| H3 武打逻辑评分 | JEV 式概率打分 |
+| H3 武打编排 | 动作导演编排 |
+| H3 武打桥 清空缓存 | 卸载常驻权重 |
+
+另外 6 个是**一次性 / 诊断**工具，默认隐藏：构建数据集、采集训练对、训练残差桥、
+训练 JEV 评分头、降级预览、文本 token 段定位。
+
+要动它们（比如重新训一个桥）时，设环境变量再重启 ComfyUI：
+
+```bat
+set WUSHU_BRIDGE_NODES=all          :: Windows cmd
+```
+```powershell
+$env:WUSHU_BRIDGE_NODES="all"       # PowerShell
+```
+
+取值 `all` / `full` / `train` / `dev` 都算全开；其它值（含默认 `core`）只留常用节点。
+
+> 过滤只影响菜单显示。节点类、权重格式、数据集格式都没动 —— 老 workflow JSON 里
+> 已经存了这些节点的话照旧能加载运行（ComfyUI 按类名实例化，不依赖菜单列表）；
+> 内部全量表在 `__init__.py` 里另导出为 `ALL_NODE_CLASS_MAPPINGS`。
+
 ---
 
 ## 4. 三步跑起来
