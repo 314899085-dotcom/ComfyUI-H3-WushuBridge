@@ -258,6 +258,70 @@ HANDOFF_EN: List[str] = [
     "resolves this beat", "takes over",
 ]
 
+
+# ── H3 六大翻车：面对面 / 跳跃有因 / 法术瞄准 / 身份锁 / 空间锁 / 法术反馈 ──
+FACING_LOCK_ZH: List[str] = [
+    "面向", "面对面", "朝向对方", "朝向角色", "面朝", "对面向", "看向对方",
+    "面向角色", "正对", "对上",
+]
+FACING_LOCK_EN: List[str] = [
+    "facing", "face to face", "face-to-face", "turns toward", "turned toward",
+    "looks at", "looking at", "faces the opponent", "facing each other",
+    "toward the opponent", "aims at",
+]
+
+JUMP_BARE_ZH: List[str] = ["跳跃", "腾空", "飞起", "跃起", "跳起", "凌空"]
+JUMP_BARE_EN: List[str] = ["jumps", "jump ", "leaps", "leap ", "flies up", "launches into the air", "goes airborne", "in mid-air", "midair"]
+JUMP_CAUSE_ZH: List[str] = ["蹬地", "借力", "起跳", "落地屈膝", "卸力", "后脚蹬", "踏地起跳"]
+JUMP_CAUSE_EN: List[str] = [
+    "drives the rear foot", "pushes off", "takeoff", "takes off",
+    "lands with knees", "unload", "plants and jumps", "ground reaction",
+]
+
+SPELL_ZH: List[str] = [
+    "法术", "掌力", "气劲", "内力外放", "符咒", "手印", "施法", "放招",
+    "弹道", "投射", "掌风",  # 掌风在 LOGIC_HOLES 里是能量特效；这里用于「有目标的击中」检查时成对出现才算合格
+]
+SPELL_EN: List[str] = [
+    "spell", "cast", "casts", "casting", "projectile", "chi blast", "qi blast",
+    "palm force", "energy bolt", "fires a", "releases a", "magic",
+]
+SPELL_TARGET_ZH: List[str] = [
+    "朝角色", "对准角色", "瞄向", "射向角色", "打向角色", "击向", "指向对方",
+    "朝对方", "对准胸口", "瞄胸口",
+]
+SPELL_TARGET_EN: List[str] = [
+    "toward", "towards", "aimed at", "aims at", "at the opponent",
+    "at Subject", "at <Subject", "at fighter", "at the chest", "into the opponent",
+]
+
+IDENTITY_LOCK_ZH: List[str] = [
+    "仍是同一张脸", "同一套服装与武器", "仍是同一人", "仍是同样两人",
+    "同一张脸、同一套服装",
+]
+IDENTITY_LOCK_EN: List[str] = [
+    "same face", "same faces", "same costume", "same costumes and weapons",
+    "same two fighters", "still the same", "fully_preserved",
+]
+
+SPATIAL_OPEN_ZH: List[str] = [
+    "在左侧", "在右侧", "画面左", "画面右", "间距", "朝向", "面向", "格",
+    "左前方", "右后方",
+]
+SPATIAL_OPEN_EN: List[str] = [
+    "on the left", "on the right", "steps of distance", "facing",
+    "at two steps", "at one step", "front-left", "rear-right",
+]
+
+SPELL_FEEDBACK_ZH: List[str] = [
+    "踉跄", "衣料", "灼痕", "击退", "闷响", "被掀", "被震", "渗血",
+    "重心不稳", "倒退", "单膝", "火星", "烧焦", "震得",
+]
+SPELL_FEEDBACK_EN: List[str] = [
+    "stagger", "staggers", "cloth", "burn", "scorch", "knockback", "knocked",
+    "thud", "recoil", "off-balance", "sparks", "blood", "numb",
+]
+
 # ── 合并导出（中英一起用）──────────────────────────────────────────────
 FORCE_CHAIN: List[str] = FORCE_CHAIN_ZH + FORCE_CHAIN_EN
 DISTANCE: List[str] = DISTANCE_ZH + DISTANCE_EN
@@ -279,6 +343,14 @@ RICOCHET: List[str] = RICOCHET_ZH + RICOCHET_EN
 ENV_CONTINUITY: List[str] = ENV_CONTINUITY_ZH + ENV_CONTINUITY_EN
 AERIAL: List[str] = AERIAL_ZH + AERIAL_EN
 HANDOFF: List[str] = HANDOFF_ZH + HANDOFF_EN
+FACING_LOCK: List[str] = FACING_LOCK_ZH + FACING_LOCK_EN
+JUMP_BARE: List[str] = JUMP_BARE_ZH + JUMP_BARE_EN
+JUMP_CAUSE: List[str] = JUMP_CAUSE_ZH + JUMP_CAUSE_EN
+SPELL: List[str] = SPELL_ZH + SPELL_EN
+SPELL_TARGET: List[str] = SPELL_TARGET_ZH + SPELL_TARGET_EN
+IDENTITY_LOCK: List[str] = IDENTITY_LOCK_ZH + IDENTITY_LOCK_EN
+SPATIAL_OPEN: List[str] = SPATIAL_OPEN_ZH + SPATIAL_OPEN_EN
+SPELL_FEEDBACK: List[str] = SPELL_FEEDBACK_ZH + SPELL_FEEDBACK_EN
 
 # 攻击动作词（用于"具体描写 -> 空泛形容"的定位）
 ATTACK_WORDS: List[str] = [
@@ -390,6 +462,13 @@ _SLOT_BUCKETS: Dict[str, List[str]] = {
     "env_continuity": ENV_CONTINUITY,
     "aerial": AERIAL,
     "handoff": HANDOFF,
+    "facing_lock": FACING_LOCK,
+    "jump_cause": JUMP_CAUSE,
+    "spell": SPELL,
+    "spell_target": SPELL_TARGET,
+    "identity_lock": IDENTITY_LOCK,
+    "spatial_open": SPATIAL_OPEN,
+    "spell_feedback": SPELL_FEEDBACK,
 }
 
 

@@ -97,6 +97,39 @@ integrated_multimodal_description:
 [Shot 3] At 00:05.400.over-the-shoulder。角色A在右侧面向左，角色B在左侧面向右。角色A拧腰「斜劈」打掉角色B架门，腰刀脱手落地，握持权落到湿石；包袱仍在角色B左手。角色A跟步逼得角色B单膝跪地撑住，于是追击结束，角色B不再起跑。
 overall_soundscape: 踏湿石打滑、追步、兵刃相交、包袱布料、雨声、粗喘。
 non_diegetic_music: None.""",
+    # ── 9. 面对面交手（朝向锁，防背对空砍）──────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 青砖演武场，正午硬光。角色A是青衫持剑男性，画面左侧。角色B是灰袍持刀男性，画面右侧。两人开场已面对面，刀尖相抵。
+integrated_multimodal_description:
+[Shot 1] medium shot, handheld follow。角色A在左侧与角色B面对面，间距2格，刀尖指向对方胸口。角色A后脚蹬砖转腰，「直刺」朝对方刺出。角色B举刀斜挡，刃对刃出火星，因此后退半步，两人始终面对面。仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.200.over-the-shoulder。接上一镜：角色A仍在左侧朝向角色B，角色B在右侧面向角色A，间距1格，没有背对。角色B「撩刀」朝对方反击，角色A刀脊磕住，因此虎口发麻。仍是同一张脸、同一套服装与武器。
+[Shot 3] At 00:05.400.斜侧推进。角色A在左侧面对面朝向角色B，间距1格，终结技「斜劈」朝对方肩线压下，角色B硬吃踉跄，于是沿作用线单膝跪地，不再起身。
+overall_soundscape: 踏砖、兵刃相交、闷哼、粗喘。
+non_diegetic_music: None.""",
+    # ── 10. 有因跳跃：蹬地起跳 + 落地卸力 ────────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 夜巷，夯土地面，土墙为实体。角色A是短打持单刀女性，画面左侧，间距2格。角色B是劲装持棍男性，画面右侧。
+integrated_multimodal_description:
+[Shot 1] medium shot, low angle。角色A在左侧面向角色B，后脚蹬土借力起跳，腰胯上送，双脚离地；腾空中面向角色B走「过肩劈」下劈，刃口对准对方肩线。角色B举棍斜挡，棍身闷响。仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.000.tracking。接上一镜：角色A落地屈膝卸力，冲击散入夯土，站稳后再跟步收到1格，没有无意义悬空。角色B在右侧面向角色A，趁落地瞬间「扫棍」扫膝，角色A提膝避开。仍是同一张脸、同一套服装与武器。
+[Shot 3] At 00:05.200.over-the-shoulder。角色A在左侧朝向角色B，终结技「横扫」走平弧，角色B硬吃侧倒，于是不再起身。
+overall_soundscape: 蹬土起跳、衣料破空、落地踏实、棍身闷响、粗喘。
+non_diegetic_music: None.""",
+    # ── 11. 法术瞄准对手 + 击中反馈 ─────────────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 石殿内，地面干燥，两侧石柱为实体。角色A是道袍持短杖男性，画面左侧。角色B是劲装持剑男性，画面右侧。开场已面对面。
+integrated_multimodal_description:
+[Shot 1] medium shot, handheld。角色A在左侧与角色B面对面，间距3格，抬手对准角色B胸口蓄力。角色A后脚蹬地沉胯，掌力法术射向角色B胸口，弹道可追。角色B侧闪半步，掌力擦肩而过溅起石屑。仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.300.tracking。接上一镜：角色A仍在左侧朝向角色B，间距2格。角色A再次施法，掌力瞄准角色B胸口击中，衣料震起灼痕，因此角色B踉跄倒退1格，闷哼一声，重心不稳。仍是同一张脸、同一套服装与武器。
+[Shot 3] At 00:05.500.over-the-shoulder。角色A跟步面对面逼近，短杖终结技点向肩窝，角色B沿作用线单膝跪地，于是不再起身。
+overall_soundscape: 掌力破空、石屑、衣料灼响、闷哼、粗喘。
+non_diegetic_music: None.""",
+    # ── 12. 切镜身份+空间锁（无瞬移无换人）─────────────────────────
+    """wushu_action, 10.2 seconds, 243 frames, 16:9, 24fps, 832x480. 雨夜长街，湿石反光，灯笼柱为实体。角色A是黑衣持太刀男性，黑发披散。角色B是靛蓝袍持单刀男性，灰发束髻。
+integrated_multimodal_description:
+[Shot 1] handheld follow, medium shot。角色A在左侧面向角色B，角色B在右侧，间距2格。角色A蹬湿石「点刺」朝对方刺出，角色B斜挡出火星，因此退半步。两人仍是同一张脸、同一套服装与武器。
+[Shot 2] At 00:02.100.low angle。接上一镜：角色A仍在左侧朝向角色B，角色B仍在右侧面向角色A，间距1格，位置连续没有瞬移。角色B「撩刀」朝对方反击，角色A刀脊磕住。仍是同一张脸、同一套服装与武器，黑发与靛蓝袍未变人。
+[Shot 3] At 00:05.400.over-the-shoulder。接上一镜：角色A在左侧，角色B在右侧，间距1格，朝向面对面。角色A终结技「过肩劈」朝对方压下，角色B硬吃仰面倒地，于是不再起身。湿石仍湿。
+overall_soundscape: 踏湿石、兵刃、雨声、闷哼、粗喘。
+non_diegetic_music: None.""",
+
 ]
 
 SEED_REF2V: List[str] = [
@@ -134,6 +167,24 @@ detailed_description:
 [Shot 3] At 00:05.400.over-the-shoulder. <Subject 1> on the left faces <Subject 2> at one step, cuts diagonally; <Subject 2>'s guard is late after the stoop, takes the hit, and <Subject 1> finishes with a vertical chop along the line of force. <Subject 2> falls and does not get up; debris and wall scuff from the rebound stay in frame.
 overall_soundscape: feet on packed earth, staff thud on wall, steel on wood sparks, grunt, night wind.
 non_diegetic_music: None.""",
+    # ── 新：面对面 + 法术瞄准击中反馈 + 切镜身份空间锁（EN ref2v）──
+    """subject_definitions:
+<Subject 1> is the man in <Picture 1>, daoist robe, short staff in the right hand. Preserve face, hair, clothing, proportions.
+<Subject 2> is the man in <Picture 2>, martial jacket, straight sword. Preserve face, hair, clothing, proportions.
+<Subject 3> is the stone hall in <Picture 3>, dry floor, solid pillars on both sides.
+summary:
+[reference generation] A 10-second face-to-face duel: <Subject 1> casts palm-force aimed at <Subject 2>'s chest, the hit staggers him with a scorch mark, then a staff finisher ends the fight without teleport or identity drift.
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - face, robe, staff unchanged.
+<Subject 2> (appears in [Shot 2]): fully_preserved - face, jacket, sword unchanged.
+<Subject 3> (appears in [Shot 3]): fully_preserved - pillars and floor marks persist.
+detailed_description:
+[Shot 1] handheld follow, medium shot. <Subject 1> on the left stands face to face with <Subject 2> on the right at three steps, raises a hand aimed at <Subject 2>'s chest, drives the rear foot and casts palm-force toward <Subject 2>'s chest. <Subject 2> sidesteps; the bolt grazes the pillar with stone chips. They are still the same two fighters, same faces, same costumes and weapons.
+[Shot 2] At 00:02.300.tracking. Continuing: <Subject 1> still on the left facing <Subject 2> at two steps — no teleport. He casts again aimed at <Subject 2>'s chest; the spell hits, cloth jolts with a scorch mark, so <Subject 2> staggers back one step with a grunt, off-balance. Same faces, same costumes and weapons.
+[Shot 3] At 00:05.500.over-the-shoulder. <Subject 1> on the left faces <Subject 2> at one step, finishes with a staff tip to the shoulder hollow; <Subject 2> drops to one knee along the line of force and does not get up.
+overall_soundscape: palm-force whoosh, stone chips, cloth scorch, grunt, breath.
+non_diegetic_music: None.""",
+
 ]
 
 SEED_HORDE: List[str] = [

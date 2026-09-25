@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.1 — H3 六大翻车差向量（优先）
+
+### Added
+- 六大实测失败模式：无因跳跃、未面对面、法术打空气、切镜换人/瞬移、空间锚缺失、法术击中无反馈
+- 降级：`facing_break` / `jump_orphan` / `spell_miss_target` / `identity_drift` / `teleport_cut` / `spell_no_feedback`
+- 词表与 `logic_score` 硬检查；种子 T2V+4 / Ref2V+1；链模板 4 条
+- `CRITICAL_FAILURE_OPS` 并入 `DEFAULT_OPS`
+- 文档：`docs/逻辑链说明.md` §0「H3 常见翻车 → 桥要学的差向量」
+
+### Unchanged
+- safetensors 仍为 v1（需本机 H3 CLIP 重训）
+
 ## v1.1.0 — 逻辑链 / 高动态家族（BUNNY-inspired）
 
 ### Added

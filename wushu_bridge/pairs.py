@@ -32,6 +32,12 @@
 * pursuit      去掉追击/刹停再交手因果
 * state_carry  去掉伤势/状态跨镜继承
 * chain_break  删掉拍间因果连接词（于是/顺势/therefore…）
+* facing_break 去掉面对面/朝向对方，或无因果地左右对调
+* jump_orphan  注入无蹬地/落地卸力的腾空，或抽掉落地卸力
+* spell_miss_target 保留施法但去掉「朝对手」→打向空气
+* identity_drift 切镜后改发型/服装措辞或去掉同一张脸锁
+* teleport_cut 去掉切镜开头的位置重申（模拟瞬移）
+* spell_no_feedback 法术击中后抽掉物理反馈
 """
 
 from __future__ import annotations
@@ -527,6 +533,283 @@ def _break_causal_chain(text: str, rng: random.Random) -> Tuple[str, bool]:
     return _operate_on_shots(text, fn)
 
 
+
+# ── H3 六大翻车专用降级（用户实测失败模式）────────────────────────────
+
+_FACING_LOCK_PHRASE_ZH = re.compile(
+    r"(?:面对面|面向对方|朝向对方|对面向|正对角色[AB]|面向角色[AB]|面朝对方)[^，。；]*"
+)
+_FACING_LOCK_PHRASE_EN = re.compile(
+    r"\b(?:face[- ]to[- ]face|facing each other|turns? toward(?:s)?(?:\s+\w+){0,4}|"
+    r"looks? at(?:\s+the)?(?:\s+opponent)?|faces? the opponent|aimed at(?:\s+\w+){0,4})\b[^,.;]*",
+    re.I,
+)
+
+_IDENTITY_LOCK_PHRASES = [
+    "仍是同一张脸、同一套服装与武器",
+    "仍是同一张脸、同一套服装与武器。",
+    "仍是同一人、同一套服装与武器",
+    "仍是同样两人、同一张脸、同一套服装兵器",
+    "same faces, same costumes and weapons",
+    "same two fighters, same faces, same costumes and weapons",
+    "still the same two fighters, same faces, same costumes and weapons",
+    "still the same face, costume and weapon",
+    "and the two are still the same two fighters, same faces, same costumes and weapons",
+]
+
+_SPELL_TARGET_ZH = re.compile(
+    r"(?:朝|对准|瞄向|射向|打向|击向|指向)(?:角色[ABC]|对方|对手|胸口)[^，。；]*"
+)
+_SPELL_TARGET_EN = re.compile(
+    r"\b(?:toward|towards|aimed at|aims at|at the opponent|at Subject\s*\d+|at <Subject[^>]+>|"
+    r"at fighter|at the chest|into the opponent)\b[^,.;]*",
+    re.I,
+)
+
+_JUMP_LANDING_ZH = re.compile(r"(?:落地屈膝[^，。；]*|屈膝卸力[^，。；]*|落地卸力[^，。；]*)")
+_JUMP_LANDING_EN = re.compile(
+    r"(?:lands? with knees?[^.!,]*|unload(?:s|ed|ing)?[^.!,]*|landing unload[^.!,]*)",
+    re.I,
+)
+
+
+def _facing_break(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """去掉面对面/朝向对方，或无因果地左右对调。"""
+    changed = False
+
+    def fn(line: str) -> Tuple[str, bool]:
+        nonlocal changed
+        chinese = lexicons.is_chinese(line)
+        out = line
+        if chinese:
+            new, n = _FACING_LOCK_PHRASE_ZH.subn("侧身背对", out)
+            if n:
+                out, changed = new, True
+            for a, b in (("面向", "背对"), ("朝向", "背向"), ("正对", "侧对")):
+                if a in out and rng.random() < 0.7:
+                    out = out.replace(a, b)
+                    changed = True
+        else:
+            new, n = _FACING_LOCK_PHRASE_EN.subn("turned away, not facing", out)
+            if n:
+                out, changed = new, True
+            out2 = re.sub(r"\bfacing\b", "turned away from", out, flags=re.I)
+            if out2 != out:
+                out, changed = out2, True
+        # 无因果左右对调
+        if rng.random() < 0.5:
+            tmp = out.replace("左侧", "§R§").replace("右侧", "§L§")
+            tmp = tmp.replace("§R§", "右侧").replace("§L§", "左侧")
+            tmp = re.sub(r"\bon the left\b", "§OR§", tmp, flags=re.I)
+            tmp = re.sub(r"\bon the right\b", "on the left", tmp, flags=re.I)
+            tmp = tmp.replace("§OR§", "on the right")
+            if tmp != out:
+                out, changed = tmp, True
+        return out, changed
+
+    new, did = _operate_on_shots(text, fn)
+    if not did:
+        return _drop_sentences_with(text, lexicons.FACING_LOCK, 0.05, rng)
+    return new, did
+
+
+def _jump_orphan(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """注入无蹬地/落地卸力的腾空，或抽掉已有落地卸力。"""
+    chinese = lexicons.is_chinese(text)
+    # 优先抽掉落地卸力
+    stripped, did = False, False
+    out = text
+    if chinese:
+        out2, n = _JUMP_LANDING_ZH.subn("落地", out)
+        if n:
+            out, did = out2, True
+        # 抽起跳借力句
+        out3, d2 = _drop_sentences_with(out, lexicons.JUMP_CAUSE, 0.05, rng)
+        if d2:
+            out, did = out3, True
+    else:
+        out2, n = _JUMP_LANDING_EN.subn("lands", out)
+        if n:
+            out, did = out2, True
+        out3, d2 = _drop_sentences_with(out, lexicons.JUMP_CAUSE, 0.05, rng)
+        if d2:
+            out, did = out3, True
+
+    # 若正文没有跳跃，注入一个无因腾空
+    low = out.lower()
+    has_jump = any((w.lower() if w.isascii() else w) in low for w in lexicons.JUMP_BARE)
+    if not has_jump or rng.random() < 0.55:
+        inject = "角色突然腾空跃起，没有蹬地借力。" if chinese else (
+            "The fighter suddenly jumps into the air with no takeoff push and no landing unload. "
+        )
+        lines = out.split("\n")
+        for i, line in enumerate(lines):
+            if SHOT_RE.match(line.strip()):
+                lines[i] = line.rstrip() + (" " if not chinese else "") + inject
+                did = True
+                break
+        out = "\n".join(lines)
+    return out, did
+
+
+def _spell_miss_target(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """保留施法动作但去掉朝对手瞄准 → 打向空气。"""
+    changed = False
+    chinese = lexicons.is_chinese(text)
+    out = text
+    if chinese:
+        out2, n = _SPELL_TARGET_ZH.subn("朝空地打出", out)
+        if n:
+            out, changed = out2, True
+        out = out.replace("对准胸口", "打向空气").replace("射向角色", "射向空处")
+        if "打向空气" in out or "射向空处" in out or "朝空地" in out:
+            changed = True
+    else:
+        out2, n = _SPELL_TARGET_EN.subn("into empty air", out)
+        if n:
+            out, changed = out2, True
+        out3 = re.sub(r"\baimed at\b", "fired into empty air past", out, flags=re.I)
+        if out3 != out:
+            out, changed = out3, True
+
+    # 若没有法术词，注入一次打空法术
+    low = out.lower()
+    has_spell = any((w.lower() if w.isascii() else w) in low for w in lexicons.SPELL)
+    if not has_spell and rng.random() < 0.7:
+        inj = ("角色抬手施法，掌力打向空气，没有对准对手。"
+               if chinese else
+               "The fighter casts a spell, palm force shooting into empty air, not aimed at the opponent. ")
+        lines = out.split("\n")
+        for i, line in enumerate(lines):
+            if SHOT_RE.match(line.strip()):
+                lines[i] = line.rstrip() + (" " if not chinese else "") + inj
+                changed = True
+                break
+        out = "\n".join(lines)
+    return out, changed
+
+
+def _identity_drift(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """切镜后去掉同一张脸锁，或改发型/服装措辞制造换人感。"""
+    lines = text.split("\n")
+    changed = False
+    shot_i = 0
+    out_lines = []
+    for line in lines:
+        if SHOT_RE.match(line.strip()):
+            shot_i += 1
+        new = line
+        if shot_i >= 2:
+            for phrase in _IDENTITY_LOCK_PHRASES:
+                if phrase in new:
+                    new = new.replace(phrase, "")
+                    changed = True
+            # 故意改外貌措辞
+            if rng.random() < 0.6:
+                for a, b in (
+                    ("黑发", "金发"), ("灰发", "红发"), ("黑色武士劲装", "白色长袍"),
+                    ("靛蓝汉服武袍", "赤红短打"),
+                    ("black hair", "blonde hair"), ("grey hair", "red hair"),
+                    ("black warrior", "white-robed"), ("indigo", "crimson"),
+                ):
+                    if a in new:
+                        new = new.replace(a, b)
+                        changed = True
+                        break
+        out_lines.append(new)
+    if not changed:
+        # 全局剥锁
+        joined = "\n".join(out_lines)
+        for phrase in _IDENTITY_LOCK_PHRASES:
+            if phrase in joined:
+                joined = joined.replace(phrase, "")
+                changed = True
+        return joined, changed
+    return "\n".join(out_lines), changed
+
+
+def _teleport_cut(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """去掉 Shot 2+ 开头的位置/朝向/间距重申，模拟切镜瞬移。"""
+    lines = text.split("\n")
+    changed = False
+    shot_i = 0
+    spatial_zh = re.compile(
+        r"(?:角色[ABC]在(?:左|右)侧[^。]*。|间距\d+(?:\.\d+)?格[^。]*。|"
+        r"朝向角色[ABC][^。]*。|画面(?:左|右)(?:前|后)?方[^。]*。|"
+        r"接上一镜：[^。]*。)"
+    )
+    spatial_en = re.compile(
+        r"(?:<Subject\s*\d+>\s+is on the (?:left|right)[^.]{0,80}\.|"
+        r"(?:holding|at)\s+\w+\s+steps? of distance[^.]{0,60}\.|"
+        r"on the (?:left|right), facing[^.]{0,80}\.)",
+        re.I,
+    )
+    out = []
+    for line in lines:
+        if SHOT_RE.match(line.strip()):
+            shot_i += 1
+        new = line
+        if shot_i >= 2:
+            before = new
+            new = spatial_zh.sub("", new)
+            new = spatial_en.sub("", new)
+            # 额外抽掉空间开场词所在短句
+            if rng.random() < 0.8:
+                sents = _sentences(new)
+                kept = []
+                for s in sents:
+                    if _line_has(s, lexicons.SPATIAL_OPEN) and len(s) < 80:
+                        changed = True
+                        continue
+                    kept.append(s)
+                if kept:
+                    new = "".join(kept)
+            if new != before:
+                changed = True
+        out.append(new)
+    return "\n".join(out), changed
+
+
+def _spell_no_feedback(text: str, rng: random.Random) -> Tuple[str, bool]:
+    """法术/投射物击中后抽掉物理反馈，只留「打中了」。"""
+    chinese = lexicons.is_chinese(text)
+    # 先定位含击中+法术的句子，抽反馈词
+    changed = False
+
+    def fn(line: str) -> Tuple[str, bool]:
+        nonlocal changed
+        low = line.lower()
+        has_hit = any(w in low for w in ("击中", "命中", "打中", "connects", "hits", "struck", "impact"))
+        has_spell = _line_has(line, lexicons.SPELL) or "掌力" in line or "projectile" in low
+        if not (has_hit or has_spell):
+            return line, False
+        out = line
+        for w in lexicons.SPELL_FEEDBACK:
+            if w.isascii():
+                pat = re.compile(r"\b" + re.escape(w) + r"\b", re.I)
+                if pat.search(out) and rng.random() < 0.9:
+                    out = pat.sub("", out)
+                    changed = True
+            elif w in out and rng.random() < 0.9:
+                out = out.replace(w, "")
+                changed = True
+        # 把反馈句换成空泛命中
+        if chinese and ("击中" in out or "命中" in out):
+            out2 = re.sub(r"(击中|命中)[^，。；]*", r"\1对方，没有明显反应", out)
+            if out2 != out:
+                out, changed = out2, True
+        elif has_hit:
+            out2 = re.sub(r"(hits?|connects|struck)[^.!,]*", r"\1 with no visible reaction", out, flags=re.I)
+            if out2 != out:
+                out, changed = out2, True
+        return out, changed
+
+    new, did = _operate_on_shots(text, fn)
+    if not did:
+        return _drop_sentences_with(text, lexicons.SPELL_FEEDBACK, 0.1, rng)
+    return new, did
+
+
 @dataclass
 class DegradeOp:
     key: str
@@ -575,6 +858,19 @@ _OPS: List[DegradeOp] = [
               lambda t, r, lv: _strip_state_carry(t, r)),
     DegradeOp("chain_break", "删掉拍间因果连接词", 1.0,
               lambda t, r, lv: _break_causal_chain(t, r)),
+    # H3 六大翻车（用户实测失败模式）
+    DegradeOp("facing_break", "去掉面对面/朝向或无因果左右对调", 1.1,
+              lambda t, r, lv: _facing_break(t, r)),
+    DegradeOp("jump_orphan", "无因腾空或抽掉落地卸力", 1.1,
+              lambda t, r, lv: _jump_orphan(t, r)),
+    DegradeOp("spell_miss_target", "施法去掉朝对手瞄准→打向空气", 1.1,
+              lambda t, r, lv: _spell_miss_target(t, r)),
+    DegradeOp("identity_drift", "切镜后去掉同一张脸锁/改外貌", 1.1,
+              lambda t, r, lv: _identity_drift(t, r)),
+    DegradeOp("teleport_cut", "去掉切镜空间锚点（模拟瞬移）", 1.1,
+              lambda t, r, lv: _teleport_cut(t, r)),
+    DegradeOp("spell_no_feedback", "法术击中后抽掉物理反馈", 1.1,
+              lambda t, r, lv: _spell_no_feedback(t, r)),
 ]
 OPS_BY_KEY: Dict[str, DegradeOp] = {op.key: op for op in _OPS}
 ALL_OP_KEYS: List[str] = [op.key for op in _OPS]
@@ -584,8 +880,13 @@ LOGIC_OPS: List[str] = ["force_chain", "distance", "contact", "feedback", "defen
 HIGH_DYNAMIC_OPS: List[str] = [
     "ownership", "occlusion", "facing", "momentum", "pursuit", "state_carry", "chain_break",
 ]
-# 默认档案：经典逻辑 + 高动态混合（v1.1）
-DEFAULT_OPS: List[str] = LOGIC_OPS + HIGH_DYNAMIC_OPS
+# H3 六大翻车专用（优先级最高，默认混入）
+CRITICAL_FAILURE_OPS: List[str] = [
+    "facing_break", "jump_orphan", "spell_miss_target",
+    "identity_drift", "teleport_cut", "spell_no_feedback",
+]
+# 默认档案：经典逻辑 + 高动态 + 六大翻车
+DEFAULT_OPS: List[str] = LOGIC_OPS + HIGH_DYNAMIC_OPS + CRITICAL_FAILURE_OPS
 
 
 @dataclass

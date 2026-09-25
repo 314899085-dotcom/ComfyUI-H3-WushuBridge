@@ -1,30 +1,36 @@
 {
   "pairs_path": "models/wushu_bridge/datasets/wushu_pairs_v2_logic_chains.jsonl",
   "stats": {
-    "count": 333,
+    "count": 414,
     "sources": {
-      "corpus": 223,
-      "seed": 110
+      "corpus": 270,
+      "seed": 144
     },
-    "mean_bad_score": 0.4307,
-    "mean_good_score": 0.552,
-    "mean_gap": 0.1212,
+    "mean_bad_score": 0.4067,
+    "mean_good_score": 0.5412,
+    "mean_gap": 0.1345,
     "op_usage": {
-      "holes": 100,
-      "moves": 99,
-      "chain_break": 92,
-      "defense": 89,
-      "force_chain": 72,
-      "feedback": 67,
-      "occlusion": 63,
-      "facing": 58,
-      "distance": 57,
-      "contact": 52,
-      "ending": 41,
-      "ownership": 33,
-      "momentum": 25,
-      "state_carry": 23,
-      "pursuit": 17
+      "jump_orphan": 235,
+      "spell_miss_target": 190,
+      "facing_break": 136,
+      "defense": 130,
+      "force_chain": 117,
+      "moves": 112,
+      "chain_break": 108,
+      "teleport_cut": 93,
+      "occlusion": 92,
+      "feedback": 81,
+      "facing": 75,
+      "contact": 68,
+      "spell_no_feedback": 64,
+      "identity_drift": 63,
+      "ending": 58,
+      "distance": 55,
+      "ownership": 53,
+      "momentum": 37,
+      "holes": 33,
+      "state_carry": 19,
+      "pursuit": 19
     }
   },
   "ops": [
@@ -41,7 +47,13 @@
     "momentum",
     "pursuit",
     "state_carry",
-    "chain_break"
+    "chain_break",
+    "facing_break",
+    "jump_orphan",
+    "spell_miss_target",
+    "identity_drift",
+    "teleport_cut",
+    "spell_no_feedback"
   ],
   "chains": [
     {
@@ -302,6 +314,64 @@
         "ownership",
         "facing",
         "causal"
+      ]
+    },
+    {
+      "name": "face_to_face_duel",
+      "label_zh": "面对面交手（朝向锁）",
+      "label_en": "Face-to-face duel facing lock",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "facing",
+        "distance",
+        "force",
+        "moves",
+        "defense",
+        "contact",
+        "occlusion"
+      ]
+    },
+    {
+      "name": "jump_takeoff_land",
+      "label_zh": "有因跳跃：蹬地起跳+落地卸力",
+      "label_en": "Motivated jump: takeoff force + landing unload",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "force",
+        "aerial",
+        "moves",
+        "contact",
+        "facing",
+        "feedback"
+      ]
+    },
+    {
+      "name": "spell_aimed_feedback",
+      "label_zh": "法术瞄准对手+击中反馈",
+      "label_en": "Spell aimed at foe + hit feedback",
+      "family": "fight",
+      "beats": 3,
+      "slots": [
+        "facing",
+        "distance",
+        "force",
+        "contact",
+        "feedback",
+        "momentum"
+      ]
+    },
+    {
+      "name": "cross_shot_identity_space",
+      "label_zh": "切镜身份+空间锁（无瞬移无换人）",
+      "label_en": "Cross-shot identity + spatial locks",
+      "family": "behavior",
+      "beats": 2,
+      "slots": [
+        "facing",
+        "distance",
+        "occlusion"
       ]
     }
   ],

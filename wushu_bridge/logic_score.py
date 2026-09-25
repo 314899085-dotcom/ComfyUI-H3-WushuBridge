@@ -266,6 +266,106 @@ def score_logic(text: str, mode: str = "final", lang: Optional[str] = None) -> L
             f"{carry_n}/{len(shots)} 拍带继承短语",
         ))
 
+
+    # ── 16. H3 六大翻车硬检查（用户实测失败模式）────────────────────
+    def _shot_has(shot: str, words) -> bool:
+        return _hit(shot, words)
+
+    # 16a 跳跃无因：出现 JUMP_BARE 却没有 JUMP_CAUSE / force
+    jump_bad = 0
+    jump_total = 0
+    for s in shots:
+        if _shot_has(s, lexicons.JUMP_BARE) or _shot_has(s, ["腾空", "跳跃", "leap", "jumps"]):
+            jump_total += 1
+            if not (_shot_has(s, lexicons.JUMP_CAUSE) or _shot_has(s, lexicons.FORCE_CHAIN)):
+                jump_bad += 1
+            # 有跳跃也应有落地卸力（同镜或后文）
+            if not _shot_has(s, ["落地屈膝", "卸力", "lands with knees", "unload", "landing"]):
+                jump_bad += 0.5
+    if jump_total:
+        jump_score = max(0.0, 1.0 - jump_bad / max(jump_total, 1))
+        detail = f"{jump_total} 处跳跃，无因/缺卸力记 {jump_bad}"
+    else:
+        jump_score = 0.7  # 无跳跃不扣，中性偏过
+        detail = "无跳跃镜头"
+    checks.append(LogicCheck("jump-with-cause", "跳跃须有蹬地起跳+落地卸力", 1.2, jump_score, detail))
+
+    # 16b 面对面：打斗镜须有朝向对方 / facing lock
+    face_n = sum(1 for s in shots if _shot_has(s, lexicons.FACING_LOCK) or _shot_has(s, lexicons.FACING))
+    if shots:
+        face_score = face_n / len(shots)
+        if face_n == 0:
+            face_score = 0.15
+    else:
+        face_score = 0.0
+    checks.append(LogicCheck(
+        "facing-lock", "打斗须面对面/朝向对方", 1.3, face_score,
+        f"{face_n}/{len(shots)} 拍写了朝向/面对面",
+    ))
+
+    # 16c 法术须瞄准对手
+    spell_shots = [s for s in shots if _shot_has(s, lexicons.SPELL)]
+    if spell_shots:
+        aimed = sum(1 for s in spell_shots if _shot_has(s, lexicons.SPELL_TARGET) or _shot_has(s, ["toward", "aimed", "朝角色", "对准", "瞄"]))
+        # 打向空气 = 明确失败
+        air_miss = sum(1 for s in spell_shots if _shot_has(s, ["打向空气", "射向空", "empty air", "into empty"]))
+        spell_score = max(0.0, aimed / len(spell_shots) - 0.5 * (air_miss / len(spell_shots)))
+        checks.append(LogicCheck(
+            "spell-target", "法术/投射须瞄准对手", 1.2, spell_score,
+            f"{aimed}/{len(spell_shots)} 拍有瞄准；空放 {air_miss}",
+        ))
+    else:
+        checks.append(LogicCheck("spell-target", "法术/投射须瞄准对手", 0.4, 0.7, "本法无施法，中性"))
+
+    # 16d Shot≥2 须有身份锁
+    if len(shots) >= 2:
+        later = shots[1:]
+        id_n = sum(1 for s in later if _shot_has(s, lexicons.IDENTITY_LOCK) or _shot_has(s, lexicons.OCCLUSION))
+        id_score = id_n / len(later)
+        if id_n == 0:
+            id_score = 0.1
+        checks.append(LogicCheck(
+            "identity-lock", "切镜后同一张脸/服装/武器锁", 1.3, id_score,
+            f"Shot2+ 中 {id_n}/{len(later)} 拍有身份锁",
+        ))
+    else:
+        checks.append(LogicCheck("identity-lock", "切镜后同一张脸/服装/武器锁", 0.4, 0.8, "单镜，放宽"))
+
+    # 16e 每镜开头空间锚：左/右/间距/朝向
+    spat_n = 0
+    for s in shots:
+        head = s[:180]
+        if _shot_has(head, lexicons.SPATIAL_OPEN) or _shot_has(head, lexicons.DISTANCE) or _shot_has(head, lexicons.FACING):
+            spat_n += 1
+    spat_score = (spat_n / len(shots)) if shots else 0.0
+    if shots and spat_n < len(shots):
+        # 缺空间锚重罚
+        spat_score = min(spat_score, 0.45) if spat_n == 0 else spat_score
+    checks.append(LogicCheck(
+        "spatial-lock", "每镜开头重申左/右/间距/朝向", 1.2, spat_score,
+        f"{spat_n}/{len(shots)} 拍开头有空间锚",
+    ))
+
+    # 16f 法术击中须有反馈
+    hit_spell = []
+    for s in shots:
+        low = s.lower()
+        has_hit = any(w in low for w in ("击中", "命中", "打中", "connects", "hits ", "struck", "impact"))
+        has_spell = _shot_has(s, lexicons.SPELL)
+        if has_hit and has_spell:
+            hit_spell.append(s)
+        elif has_spell and any(w in low for w in ("击中", "命中", "hits", "connects")):
+            hit_spell.append(s)
+    if hit_spell:
+        ok_fb = sum(1 for s in hit_spell if _shot_has(s, lexicons.SPELL_FEEDBACK) or _shot_has(s, lexicons.FEEDBACK))
+        fb_score = ok_fb / len(hit_spell)
+        checks.append(LogicCheck(
+            "spell-hit-feedback", "法术击中须有物理反馈", 1.3, fb_score,
+            f"{ok_fb}/{len(hit_spell)} 处击中带踉跄/衣破/灼痕等",
+        ))
+    else:
+        checks.append(LogicCheck("spell-hit-feedback", "法术击中须有物理反馈", 0.4, 0.7, "无法术击中事件，中性"))
+
     total_w = sum(c.weight for c in checks)
     raw = sum(c.weight * max(0.0, min(1.0, c.score)) for c in checks) / max(total_w, 1e-6)
     report = LogicReport(
