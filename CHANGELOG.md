@@ -1,5 +1,13 @@
 # Changelog
 
+## Docs — HF 仓重命名 + 详细模型卡
+
+### Changed
+- Hugging Face 仓由 `Jojocodex/h3-wushu-bridge-weights` **重命名**为 [`Jojocodex/ComfyUI-H3-WushuBridge`](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge)（旧名重定向）
+- HF 现托管 **完整插件 + 权重**；根 README 换为详细双语模型卡（插件简介 / 权重简介 / 安装 / XYZ / CRITICAL）
+- GitHub README：权重仓库与安装来源改写；删除对已移除 cloud / v1 pair 文件的下载指引；GitHub clone URL 统一为 `Jojocodex-dotcom`
+- `tools/setup_laya.py`：`OURS_REPO` 指向新仓名
+
 ## v1.1.2 — XYZ 坐标锁定（角色站位）
 
 ### Added

@@ -1,6 +1,8 @@
 # ComfyUI-H3-WushuBridge · MiniMax H3 武打语义逻辑翻译桥
 
 > **v1.1.2**（XYZ 坐标锁定 + 逻辑链 + 六大翻车差向量）：完整打斗/行为因果弧 + BUNNY 风格高动态降级族；TEXT 对见 `wushu_pairs_v2_logic_chains.jsonl`。权重仍为 v1，需本机 H3 CLIP 重训。
+>
+> **Hugging Face**（公开，插件 + 权重一体）：https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge（原 `h3-wushu-bridge-weights` 已重定向）。详细模型卡见该页 README。
 
 **中文** | [English](#english)
 
@@ -281,7 +283,7 @@ python tools/setup_laya.py --verify
 同盘会走硬链接，不额外占空间。
 
 **权重仓库（公开，无需登录）**：
-[laya/ 子目录](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/tree/main/laya) —— 里面就是完整的 bundle 布局：
+[laya/ 子目录](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/tree/main/laya) —— 里面就是完整的 bundle 布局：
 
 ```
 laya/
@@ -515,132 +517,105 @@ Laya 的**模型权重不随本仓库分发**：由用户在首次使用时自�
 
 ## 安装来源（本地 / Hugging Face / GitHub）
 
-三种装法任选，装到 `ComfyUI/custom_nodes/` 下并重启 ComfyUI 即可。
+三种装法任选，装到 `ComfyUI/custom_nodes/ComfyUI-H3-WushuBridge/` 后重启 ComfyUI 即可。
 
-**① 从 Hugging Face 克隆**（本仓库默认**私有**，需要你的 HF 令牌）
+**① 从 Hugging Face 取插件**（**公开**，插件 + 权重一体仓）
+
+- 插件树：https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/tree/main/plugin/ComfyUI-H3-WushuBridge  
+- 发行 zip：https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/releases/ComfyUI-H3-WushuBridge-plugin.zip  
+- 或 clone 整仓后只用 `plugin/ComfyUI-H3-WushuBridge/` 子目录
 
 ```bash
-# 私有仓库要先带令牌（把 <TOKEN> 换成你的 HF read 令牌）
-git clone https://Jojocodex:<TOKEN>@huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge.git
-# 或者先登录一次，之后 git 会记住凭据
-pip install -U huggingface_hub && huggingface-cli login
 git clone https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge.git
+cp -r ComfyUI-H3-WushuBridge/plugin/ComfyUI-H3-WushuBridge ComfyUI/custom_nodes/
 ```
 
-**② 从 GitHub 克隆**（公开，无需令牌）
+**② 从 GitHub 克隆**（公开源码）
 
 ```bash
-git clone https://github.com/314899085-dotcom/ComfyUI-H3-WushuBridge.git
+git clone https://github.com/Jojocodex-dotcom/ComfyUI-H3-WushuBridge.git
+# 放到 ComfyUI/custom_nodes/ComfyUI-H3-WushuBridge/
 ```
 
-**③ 下载 ZIP**：在本页右上角 **Files** 里下载整仓打包，解压后放进 `custom_nodes/` 亦可。
+**③ 本仓已在本地**：直接把本目录放进 `custom_nodes/`。
 
-**想把它变公开**：Hugging Face 仓库页 → **Settings** → *Change visibility* → Public（GitHub 侧的私有/公开在仓库 Settings → Danger Zone）。
+> 旧 HF 仓名 `h3-wushu-bridge-weights` 已重定向到 `ComfyUI-H3-WushuBridge`。
 
 ## Install sources (local / Hugging Face / GitHub)
 
-Pick any of the three; put the folder under `ComfyUI/custom_nodes/` and restart ComfyUI.
+Pick any; place under `ComfyUI/custom_nodes/ComfyUI-H3-WushuBridge/` and restart.
 
-**① Clone from Hugging Face** (this repo is **private** by default — your HF token is required)
+**① Hugging Face** (public — **full plugin + weights**):  
+plugin tree / [releases zip](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/releases/ComfyUI-H3-WushuBridge-plugin.zip) / clone and use `plugin/ComfyUI-H3-WushuBridge/`.
 
-```bash
-git clone https://Jojocodex:<TOKEN>@huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge.git
-# or log in once and let git remember the credential
-pip install -U huggingface_hub && huggingface-cli login
-git clone https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge.git
-```
+**② GitHub**: `git clone https://github.com/Jojocodex-dotcom/ComfyUI-H3-WushuBridge.git`
 
-**② Clone from GitHub** (public, no token needed)
+**③ Local copy** of this folder into `custom_nodes/`.
 
-```bash
-git clone https://github.com/314899085-dotcom/ComfyUI-H3-WushuBridge.git
-```
-
-**③ ZIP download**: use **Files** on this page to download the repo as an archive, then unzip into `custom_nodes/`.
-
-**Make it public**: Hugging Face repo page → **Settings** → *Change visibility* → Public.
-
+> Old HF id `h3-wushu-bridge-weights` redirects to `ComfyUI-H3-WushuBridge`.
 
 ---
 
-## 模型下载（不用自己训练也行）
+## 权重仓库（Hugging Face：插件 + 权重一体）
 
-仓库里的模型（语义桥 + JEV 评分头）**随本仓库一起分发**，放在 `models/wushu_bridge/`；
-同时在 Hugging Face 上有一个**公开的权重仓库**（无需登录，带 LFS 版本管理）：
+Hugging Face 仓 **https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge** 现已托管**完整插件 + 权重**
+（仓名由 `h3-wushu-bridge-weights` 重命名并重定向）。详细双语模型卡见该页 README。
 
-**权重仓库（公开）**：https://huggingface.co/Jojocodex/h3-wushu-bridge-weights
+**插件 vs 权重（短述）**
+
+| | 插件（代码 v1.1.2） | 已发布权重（v1） |
+|---|---|---|
+| 是什么 | CONDITIONING 残差「武打语义逻辑桥」+ h3lint / JEV / 编舞 / 逻辑链 / XYZ | `wushu_bridge_*` 残差桥 + `wushu_jev_*` 评分头 |
+| 能力 | 六大翻车差向量、`xyz_drift`、逻辑链模板、训练节点 | 在旧 TEXT 对上训成的语义残差；**尚未**含完整逻辑链/XYZ 重训 |
+| 怎么拿 | `plugin/` 树、releases zip、或本 GitHub 仓 | 根目录 safetensors；亦镜像在 `models/wushu_bridge/` |
 
 | 文件 | 大小 | 用途 |
 |---|---|---|
-| [wushu_bridge_wushu_v1.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_bridge_wushu_v1.safetensors) | 16MB | **语义桥**（默认 trans 架构 2 层 d=256） |
-| [wushu_jev_wushu_v1.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_jev_wushu_v1.safetensors) | 6.7MB | **JEV 评分头**（conditioning → P(武打逻辑合格)） |
-| [wushu_bridge_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_bridge_cloud.safetensors) · [wushu_jev_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_jev_cloud.safetensors) | 16MB / 3MB | 早期版本（对照用） |
-| [wushu_pairs_v1_pairs.jsonl](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1_pairs.jsonl) · [wushu_pairs_v1.json](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1.json) | 1.6MB / 308KB | 训练对清单（可**重建数据集**） |
-| `*_report.json` | 8–18KB | 训练报告（参数量/准确率/AUC/ECE/漂移/逐轮历史） |
-| [`laya/`](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/tree/main/laya) 子目录 | **1,524MB** | **内嵌 Laya 决策模型的权重**（english + multilingual 两档），供两个 Laya 裁判节点用 |
+| [wushu_bridge_wushu_v1.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_bridge_wushu_v1.safetensors) | ~16MB | **语义桥**（trans 2 层 d=256）。conditioning 残差；支持 alpha / auto_alpha / guard |
+| [wushu_jev_wushu_v1.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_jev_wushu_v1.safetensors) | ~6.7MB | **JEV 评分头**（conditioning → P(逻辑合格)），供评分节点与门控 |
+| `*_report.json` | 小 | 训练指标快照（参数量 / AUC / ECE / 漂移 / history） |
+| [datasets/wushu_pairs_v2_logic_chains.jsonl](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/blob/main/datasets/wushu_pairs_v2_logic_chains.jsonl) | ~615 对 | **最新** TEXT 对（逻辑链 + CRITICAL 含 `xyz_drift`）——供**重训** |
+| [`laya/`](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/tree/main/laya) | 可选 | Laya 裁判 bundle；`python tools/setup_laya.py --from ours` |
 
-> Laya 权重不用手工下载 —— 装完插件跑 `python tools/setup_laya.py --from ours` 即可，
-> 详见上面「Laya 裁判」一节。
+**已移除（勿再下）**：`wushu_bridge_cloud.safetensors` / `wushu_jev_cloud.safetensors`、
+`wushu_pairs_v1_pairs.jsonl` / `wushu_pairs_v1.json` —— 请只用上表最新文件。
+
+> **明确**：v1 权重早于完整逻辑链 / XYZ 重训；代码已是 v1.1.x，神经网络需本机 H3 CLIP 5120-d
+> 按 [`docs/训练流程.md`](docs/训练流程.md) 重训后才能吃满新差向量。
 
 **安装（一条命令）**：
 
 ```bash
-# 装到插件的权重目录（ComfyUI 会自动在这里找）
 mkdir -p ComfyUI/models/wushu_bridge && cd ComfyUI/models/wushu_bridge
-BASE=https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main
+BASE=https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main
 curl -L -O $BASE/wushu_bridge_wushu_v1.safetensors
 curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
-curl -L -O $BASE/wushu_pairs_v1_pairs.jsonl
 ```
 
-**仓库内镜像**：`models/wushu_bridge/` 下有完全相同的文件（含训练对清单 `datasets/wushu_pairs_v1_pairs.jsonl`
-与两份训练报告）。Hugging Face 上的插件仓库默认**私有**，取镜像需按「安装来源」一节带令牌 clone。
+**接线**：桥节点 `bridge=wushu_bridge_wushu_v1.safetensors`，可选 `judge=wushu_jev_wushu_v1.safetensors`；
+评分节点 `aggregate=mean`，`threshold=0.5`。参考：`alpha≈0.12`，`magnitude_match=per_token`，`token_span=all`（参考图用 `tail`）。
 
-**接线**：
-* **H3 武打语义逻辑桥** → `bridge` 选 `wushu_bridge_wushu_v1.safetensors`，`judge` 选 `wushu_jev_wushu_v1.safetensors`；
-* **H3 武打逻辑评分（JEV 式）** → `judge` 选 `wushu_jev_wushu_v1.safetensors`，`aggregate=mean`，`threshold=0.5`。
+## Weights repo (Hugging Face: full plugin + weights)
 
-**参考跑参**：`alpha ≈ 0.12`、`magnitude_match=per_token`、`token_span=all`（参考图模式用 `tail`）。
-
-**想自己训练**：见下面「第 2 步 · 训一次」；训练出的权重会写到 `ComfyUI/models/wushu_bridge/`，
-与这里下载的完全同构（可直接互相替换）。
-
-## Model download (no training required)
-
-The models (semantic bridge + JEV scoring head) **ship with this repo** under `models/wushu_bridge/`.
-They are also published in a **public** Hugging Face weights repo — direct download, no login:
-
-**Weights repo (public)**: https://huggingface.co/Jojocodex/h3-wushu-bridge-weights
+**https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge** now hosts the **full plugin + weights**
+(renamed from `h3-wushu-bridge-weights`). See that page’s model card for the long bilingual intro.
 
 | File | Size | Purpose |
 |---|---|---|
-| [wushu_bridge_wushu_v1.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_bridge_wushu_v1.safetensors) | 16MB | **Semantic bridge** (default trans arch, 2 layers, d=256) |
-| [wushu_jev_wushu_v1.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_jev_wushu_v1.safetensors) | 6.7MB | **JEV scoring head** (conditioning → P(logic-pass)) |
-| [wushu_bridge_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_bridge_cloud.safetensors) · [wushu_jev_cloud.safetensors](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_jev_cloud.safetensors) | 16MB / 3MB | earlier versions (reference) |
-| [wushu_pairs_v1_pairs.jsonl](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1_pairs.jsonl) · [wushu_pairs_v1.json](https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main/wushu_pairs_v1.json) | 1.6MB / 308KB | training-pair manifest (can **rebuild the dataset**) |
-| `*_report.json` | 8–18KB | training reports (params / accuracy / AUC / ECE / drift / history) |
+| [wushu_bridge_wushu_v1.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_bridge_wushu_v1.safetensors) | ~16MB | Residual semantic bridge (trans 2L d=256); alpha / auto_alpha / guard |
+| [wushu_jev_wushu_v1.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_jev_wushu_v1.safetensors) | ~6.7MB | JEV head: conditioning → P(logic-pass) |
+| `*_report.json` | small | Training metrics snapshots |
+| [datasets/wushu_pairs_v2_logic_chains.jsonl](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/blob/main/datasets/wushu_pairs_v2_logic_chains.jsonl) | ~615 pairs | Latest TEXT pairs (logic chains + CRITICAL incl. `xyz_drift`) — **retrain** |
+| [`laya/`](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/tree/main/laya) | optional | Laya judge bundle |
 
-**One-command install**:
+**Removed:** cloud weights and v1 pair dumps. **Note:** v1 nets predate full logic-chain/XYZ retrain; retrain locally with H3 CLIP 5120-d per `docs/训练流程.md`.
 
 ```bash
 mkdir -p ComfyUI/models/wushu_bridge && cd ComfyUI/models/wushu_bridge
-BASE=https://huggingface.co/Jojocodex/h3-wushu-bridge-weights/resolve/main
+BASE=https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main
 curl -L -O $BASE/wushu_bridge_wushu_v1.safetensors
 curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
-curl -L -O $BASE/wushu_pairs_v1_pairs.jsonl
 ```
-
-**In-repo mirror**: `models/wushu_bridge/` holds the identical files (plus the training-pair manifest
-`datasets/wushu_pairs_v1_pairs.jsonl` and both training reports). The Hugging Face plugin repo is
-**private** by default — clone it with a token as shown in the "Install sources" section.
-
-**Wiring**: bridge node → `bridge = wushu_bridge_wushu_v1.safetensors`, `judge = wushu_jev_wushu_v1.safetensors`;
-JEV score node → `judge = wushu_jev_wushu_v1.safetensors`, `aggregate = mean`, `threshold = 0.5`.
-
-**Reference settings**: `alpha ≈ 0.12`, `magnitude_match = per_token`, `token_span = all` (`tail` for reference-image mode).
-**Train your own instead**: see “Step 2 · train once” above; the weights land in `ComfyUI/models/wushu_bridge/`
-with the same layout, so they are interchangeable with the downloads.
-
 
 ---
 

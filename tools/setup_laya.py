@@ -57,7 +57,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 REPO = "convaiinnovations/laya"
 # 本项目的公开权重仓：laya/ 子目录里放的就是完整 bundle（english + multilingual 两档）。
 # 用 --from ours 一条命令拿全套，不用碰官方仓的多档布局。
-OURS_REPO = "Jojocodex/h3-wushu-bridge-weights"
+OURS_REPO = "Jojocodex/ComfyUI-H3-WushuBridge"
 OURS_SUBDIR = "laya"
 # 与 laya.agent 里的 allow_patterns 一致：一个档真正需要的就这四样
 NEEDED = ("rl_agent_config.json", "model.safetensors", "tokenizer", "encoder")
@@ -205,7 +205,7 @@ def main() -> int:
     ap.add_argument("--source", default="", help="权重来源目录（默认用本地 HF 缓存）")
     ap.add_argument("--from", dest="from_", default="", choices=["", "cache", "ours", "upstream"],
                     help="权重来源：cache=本地 HF 缓存（默认）；ours=从本项目的公开权重仓拉"
-                         "（Jojocodex/h3-wushu-bridge-weights 的 laya/ 子目录，一条命令拿全套）；"
+                         "（Jojocodex/ComfyUI-H3-WushuBridge 的 laya/ 子目录，一条命令拿全套）；"
                          "upstream=从 Laya 官方仓拉（convaiinnovations/laya）")
     ap.add_argument("--only", default="english,multilingual",
                     help="装哪些档（逗号分隔）：english,multilingual,typed-decisions / all。"
