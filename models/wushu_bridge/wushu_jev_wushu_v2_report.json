@@ -1,0 +1,45 @@
+{
+  "report": {
+    "kind": "wushu_judge_train",
+    "params": 1707009,
+    "size_mb_fp32": 6.512,
+    "samples": 1230,
+    "train_samples": 1046,
+    "val_samples": 184,
+    "dim": 5120,
+    "best_val_bce": 0.65906,
+    "val_accuracy": 0.9837,
+    "val_auc": 0.9974,
+    "val_pos_neg_gap": 0.2389,
+    "val_ece_after_calibration": 0.0009,
+    "temperature": 1.0008,
+    "bias": -0.0041,
+    "history_tail": [
+      {
+        "epoch": 76,
+        "train": 0.6550863069115263,
+        "val": 0.6590765144514001
+      },
+      {
+        "epoch": 77,
+        "train": 0.654977043469747,
+        "val": 0.6590640778126924
+      },
+      {
+        "epoch": 78,
+        "train": 0.6548771307323918,
+        "val": 0.6590704814247463
+      },
+      {
+        "epoch": 79,
+        "train": 0.6552582112225619,
+        "val": 0.6590744516123896
+      },
+      {
+        "epoch": 80,
+        "train": 0.6550856801596555,
+        "val": 0.6590752109237339
+      }
+    ]
+  }
+}

@@ -4,6 +4,8 @@
 >
 > **Hugging Face**（公开，插件 + 权重一体）：https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge（原 `h3-wushu-bridge-weights` 已重定向）。详细模型卡见该页 README。
 
+> **v2（推荐，2026-09-25）**：云端用真实 MiniMax-H3 CLIP（Qwen3-VL-32B int8_convrot，dim=5120）对逻辑链+XYZ 对（615 pairs）重训。桥 `wushu_bridge_wushu_v2.safetensors`；JEV `wushu_jev_wushu_v2.safetensors`（val_auc~0.997 / val_acc~0.984 / ECE~0.001）。v1 保留对照。
+
 **中文** | [English](#english)
 
 把「武打逻辑」直接写进 MiniMax H3 的 conditioning 空间：**夹在 conditioning 节点之间**，
@@ -392,7 +394,7 @@ Laya 是非自回归决策模型，**只回答 choice / score / noul 三类问�
 
 **六大实测翻车 + XYZ 坐标锁**：无因跳跃、未面对面、法术打空气、切镜换人/瞬移、空间锚缺失（**优先显式 `xyz=`**）、法术击中无反馈 —— 见 [`docs/逻辑链说明.md`](docs/逻辑链说明.md) §0 /「XYZ 坐标约定」；算子 `facing_break`/`jump_orphan`/`spell_miss_target`/`identity_drift`/`teleport_cut`/`spell_no_feedback`/`xyz_drift`。
 
-**权重**：随包的 `wushu_bridge_wushu_v1.safetensors` / `wushu_jev_wushu_v1.safetensors` **未在本版重训**。
+**权重**：请优先使用 **v2** 权重（逻辑链+XYZ，H3 CLIP 云端重训）；v1 仍保留对照。
 拉取后请在本机 ComfyUI（H3 CLIP 5120-d）按 `docs/训练流程.md` →「v1.1 逻辑链补训」重建数据集并训 v2 权重。
 
 降级算子对照（v1.1 新增）：
@@ -571,7 +573,9 @@ Hugging Face 仓 **https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge** 现
 
 | 文件 | 大小 | 用途 |
 |---|---|---|
+| [wushu_bridge_wushu_v2.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_bridge_wushu_v2.safetensors) | ~16MB | **语义桥 v2（推荐）**：逻辑链+XYZ，H3 CLIP 5120-d 云端重训 |
 | [wushu_bridge_wushu_v1.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_bridge_wushu_v1.safetensors) | ~16MB | **语义桥**（trans 2 层 d=256）。conditioning 残差；支持 alpha / auto_alpha / guard |
+| [wushu_jev_wushu_v2.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_jev_wushu_v2.safetensors) | ~6.7MB | **JEV v2（推荐）**：同 v2 逻辑链集；val_auc~0.997 |
 | [wushu_jev_wushu_v1.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_jev_wushu_v1.safetensors) | ~6.7MB | **JEV 评分头**（conditioning → P(逻辑合格)），供评分节点与门控 |
 | `*_report.json` | 小 | 训练指标快照（参数量 / AUC / ECE / 漂移 / history） |
 | [datasets/wushu_pairs_v2_logic_chains.jsonl](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/blob/main/datasets/wushu_pairs_v2_logic_chains.jsonl) | ~615 对 | **最新** TEXT 对（逻辑链 + CRITICAL 含 `xyz_drift`）——供**重训** |
@@ -588,11 +592,11 @@ Hugging Face 仓 **https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge** 现
 ```bash
 mkdir -p ComfyUI/models/wushu_bridge && cd ComfyUI/models/wushu_bridge
 BASE=https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main
-curl -L -O $BASE/wushu_bridge_wushu_v1.safetensors
-curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
+curl -L -O $BASE/wushu_bridge_wushu_v2.safetensors
+curl -L -O $BASE/wushu_jev_wushu_v2.safetensors
 ```
 
-**接线**：桥节点 `bridge=wushu_bridge_wushu_v1.safetensors`，可选 `judge=wushu_jev_wushu_v1.safetensors`；
+**接线**：桥节点 `bridge=wushu_bridge_wushu_v2.safetensors`，可选 `judge=wushu_jev_wushu_v2.safetensors`；
 评分节点 `aggregate=mean`，`threshold=0.5`。参考：`alpha≈0.12`，`magnitude_match=per_token`，`token_span=all`（参考图用 `tail`）。
 
 ## Weights repo (Hugging Face: full plugin + weights)
@@ -602,7 +606,9 @@ curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
 
 | File | Size | Purpose |
 |---|---|---|
+| [wushu_bridge_wushu_v2.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_bridge_wushu_v2.safetensors) | ~16MB | **语义桥 v2（推荐）**：逻辑链+XYZ，H3 CLIP 5120-d 云端重训 |
 | [wushu_bridge_wushu_v1.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_bridge_wushu_v1.safetensors) | ~16MB | Residual semantic bridge (trans 2L d=256); alpha / auto_alpha / guard |
+| [wushu_jev_wushu_v2.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_jev_wushu_v2.safetensors) | ~6.7MB | **JEV v2（推荐）**：同 v2 逻辑链集；val_auc~0.997 |
 | [wushu_jev_wushu_v1.safetensors](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main/wushu_jev_wushu_v1.safetensors) | ~6.7MB | JEV head: conditioning → P(logic-pass) |
 | `*_report.json` | small | Training metrics snapshots |
 | [datasets/wushu_pairs_v2_logic_chains.jsonl](https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/blob/main/datasets/wushu_pairs_v2_logic_chains.jsonl) | ~615 pairs | Latest TEXT pairs (logic chains + CRITICAL incl. `xyz_drift`) — **retrain** |
@@ -613,8 +619,8 @@ curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
 ```bash
 mkdir -p ComfyUI/models/wushu_bridge && cd ComfyUI/models/wushu_bridge
 BASE=https://huggingface.co/Jojocodex/ComfyUI-H3-WushuBridge/resolve/main
-curl -L -O $BASE/wushu_bridge_wushu_v1.safetensors
-curl -L -O $BASE/wushu_jev_wushu_v1.safetensors
+curl -L -O $BASE/wushu_bridge_wushu_v2.safetensors
+curl -L -O $BASE/wushu_jev_wushu_v2.safetensors
 ```
 
 ---

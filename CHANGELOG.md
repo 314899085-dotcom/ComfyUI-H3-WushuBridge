@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.1.3 — 2026-09-25 · v2 weights (logic-chain + XYZ)
+
+- Cloud (RTX 5090): MiniMax-H3 CLIP `qwen3vl_32b_minimax_h3_int8_convrot` (dim=5120) encoded `wushu_pairs_v2_logic_chains.jsonl` (615 pairs, DEFAULT_OPS incl. xyz_drift + six failure modes)
+- New weights: `wushu_bridge_wushu_v2.safetensors`, `wushu_jev_wushu_v2.safetensors` (+ reports)
+- JEV v2: val_auc~0.997 / val_accuracy~0.984 / ECE~0.001
+- Bridge v2: under already-high bad/good cosine (~0.996) relative_gain~0, direction_alignment~0.18; use with JEV gating
+- v1 kept; README/HF mark **v2 as recommended**
+
+
 ## Docs — HF 仓重命名 + 详细模型卡
 
 ### Changed
