@@ -164,33 +164,90 @@ h3lint 的八维（内容结构 / 运动节奏 / 音频 / 物理逻辑 / 人物�
 
 ## 5. 节点清单
 
+**菜单默认只显示 2 个节点**，因为主线只需要一个：
+
 | 节点 | 输入 → 输出 | 用途 |
 |---|---|---|
-| H3 武打语义逻辑桥（接在 conditioning 之间） | CONDITIONING → CONDITIONING + report + score | 主力节点，夹在 conditioning 之间 |
-| H3 武打逻辑评分（JEV 式） | CONDITIONING → score + report + pass | 不吐字直接给概率，可当筛选/分流开关 |
-| H3 武打提示词体检（规则引擎） | STRING → score + grade + report | h3lint 的 Python 版，八维诊断 |
-| H3 武打桥 构建数据集 | CLIP + 语料路径 → *.npz | 用 H3 文本编码器把正/负例编码成训练数据 |
-| H3 武打桥 采集训练对 | 两条 CONDITIONING → 追加到数据集 | 参考图模式：直接采含 ref token 的真实样本 |
-| H3 武打桥 训练残差桥 | dataset → safetensors | 训练桥 |
-| H3 武打桥 训练 JEV 评分头 | dataset → safetensors | 训练评分头 |
-| H3 武打桥 降级预览 | 正例文本 → 负例文本 | 看训练对长什么样，调降级强度 |
-| H3 文本 token 段定位 | 两段 CONDITIONING → start/end | 参考图模式诊断：文本 token 落在哪一段 |
-| H3 武打桥 清空缓存 | — | 换权重后清显存缓存 |
-| **H3 武打 Laya 裁判（自定义规则）** | STRING + 规则 → score + pass + level + report | 内嵌 Laya 决策模型，rubric 五问 + 你的规则 |
-| **H3 武打 Laya 优化回路（排序+指方向）** | 原稿 + N 份候选 → best_text + score + direction | 候选稿打分排序，并挑出最该先修的一条 |
+| **H3 武打语义优化（判断→优化→输出）** | CONDITIONING + 提示词 → CONDITIONING + score + pass + report | **就用它**。判断→优化→复评→合格输出，全在一个节点里 |
+| H3 武打桥 清空缓存 | — | 换权重/换小模型后清显存 |
+
+### 那一个节点内部在做什么
+
+```
+CLIPTextEncode ──►【H3 武打语义优化】──► KSampler
+                         │
+   Laya 判武打逻辑（15 秒内，本地）
+        │达标 ──► conditioning 原样输出，什么都不动
+        │
+        └不达标 ──► 残差桥在 conditioning 空间施加修正
+                     （可选）小模型按"待修项"重写提示词 → 重新编码 → 再上桥
+                     复评 ◄──────────────────────────┘
+                       │真的变好了 → 接受，继续
+                       │没变好     → 回退并停（不做无用功）
+```
+
+输出 `pass=False` 时报告会**直接告诉你差在哪、下一步该开什么**（比如"文本分只能靠改文字提升，
+请把 llm_mode 设成 hf"）。
+
+### 其余节点（默认收起）
+
+不是不能用，是日常出片用不到 —— 全列出来会把主线淹掉。要看全部：
+
+```powershell
+$env:WUSHU_BRIDGE_NODES="all"     # 然后重启 ComfyUI
+```
+
+收起的 12 个：单独的语义桥 / JEV 评分 / h3lint 体检 / 武打编排（动作导演）/
+Laya 裁判分体版（只判分）/ Laya 优化回路（候选稿排序）/ 建数据集 / 采训练对 /
+训桥 / 训评分头 / 降级预览 / token 段定位。老 workflow 里存过的节点照旧能加载运行。
 
 ---
 
-## 5.5 Laya 裁判（内嵌决策模型，免安装免服务）
+## 5.5 Laya 裁判 + 可选小模型（都随插件走，免额外服务）
 
-上面两个 Laya 节点把 **[Laya](https://github.com/NandhaKishorM/laya)**（本地、
-Apache-2.0、非自回归的决策模型）当"武打语义裁判"用。它**随插件一起装**：
+**[Laya](https://github.com/NandhaKishorM/laya)**（本地、Apache-2.0、非自回归决策模型）
+负责**判断**；残差桥负责**改 conditioning**；可选的小语言模型只负责**写字**。
+三者分工明确，因为 Laya 只会回答 choice/score/noul 三类问题、**不会生成文本**。
+
+| 角色 | 干什么 | 谁来干 |
+|---|---|---|
+| 判断 | 这段武打逻辑合不合格、弱项在哪 | **Laya**（文本输入，实测 0.7~2.3 秒/次） |
+| 优化 conditioning | 在 5120 维条件空间施加武打逻辑修正 | **残差桥**（插件自带 16MB 权重） |
+| 兜底校验 | 防止"文本分涨了但条件向量变坏" | **JEV 评分头**（插件自带 6.5MB） |
+| 改文字 | Laya 判出逻辑缺失、光靠桥补不回来时重写提示词 | **可选小模型**（下面有清单） |
+
 
 * **免 pip 安装**：Laya 本体是纯 Python、8 个文件、76KB，已内嵌在
   `wushu_bridge/vendor/laya/`（依赖 numpy/torch/transformers 等 ComfyUI 本来就有）；
 * **免外挂服务**：进程内直接推理，不用另起 HTTP 服务、不用另配 venv；
 * **免联网**：权重从本地装配，跑的时候完全离线；
 * **用得上 GPU**：直接跑在 ComfyUI 的 torch 上（实测 RTX 3080，判断 0.7~2.3 秒/次）。
+
+### 可选小模型（只在需要"改文字"时才用）
+
+`llm_mode` 三种取值：
+
+| 取值 | 说明 |
+|---|---|
+| `off`（默认） | 只做 conditioning 空间优化。**先用这个** —— 大多数情况够用，且不用下载任何东西 |
+| `hf` | 用下面的小模型重写提示词。没下载过会**自动下**到 `ComfyUI/models/wushu_bridge/llm/<模型名>/`，之后离线可用。需要接上 `clip`（重写后要重新编码） |
+| `endpoint` | 调本机已有的 OpenAI 兼容服务（llama.cpp / LM Studio / vLLM）。**不下载、不额外占显存**；填 `llm_endpoint_url` 即可 |
+
+`hf` 模式的模型清单（都是**实测核验过**的存在性/体积/许可/门禁）：
+
+| 模型 | 体积 | 许可 | 门禁 | 说明 |
+|---|---|---|---|---|
+| **openbmb/MiniCPM5-2B** | 5.03 GB | apache-2.0 | 无 | 默认。同类里最强的小模型之一，写动作描述够用 |
+| Qwen/Qwen3-1.7B | 4.06 GB | apache-2.0 | 无 | 最省显存、最快 |
+| HuggingFaceTB/SmolLM3-3B | 6.15 GB | apache-2.0 | 无 | |
+| microsoft/Phi-4-mini-instruct | 7.67 GB | mit | 无 | |
+| Qwen/Qwen3-4B-Instruct-2507 | 8.04 GB | apache-2.0 | 无 | 质量更好 |
+| openbmb/MiniCPM4-8B | 16.37 GB | apache-2.0 | 无 | 更大更强 |
+| google/gemma-3-1b-it | 2.00 GB | gemma | ⚠️ 需先在模型页同意条款 | 最小 |
+| meta-llama/Llama-3.2-1B-Instruct | 2.47 GB | llama3.2 | ⚠️ 需先在模型页同意条款 | |
+
+> 门禁（gated）的两个要先去 HuggingFace 模型页点同意，否则下载会 401。
+> 手动预下载也行：`huggingface-cli download openbmb/MiniCPM5-2B --local-dir <上面那个目录>`。
 
 ### 装权重（一次性，约 1.5GB）
 

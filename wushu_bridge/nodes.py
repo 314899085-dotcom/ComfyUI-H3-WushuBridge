@@ -908,16 +908,27 @@ from .laya_nodes import (  # noqa: E402
 NODE_CLASS_MAPPINGS.update(_LAYA_NODES)
 NODE_DISPLAY_NAME_MAPPINGS.update(_LAYA_NAMES)
 
+# ── 一站式节点：Laya 判断 → 优化 conditioning → 合格输出 ─────────────────────
+from .optimize_node import (  # noqa: E402
+    NODE_CLASS_MAPPINGS as _OPT_NODES,
+    NODE_DISPLAY_NAME_MAPPINGS as _OPT_NAMES,
+)
+
+NODE_CLASS_MAPPINGS.update(_OPT_NODES)
+NODE_DISPLAY_NAME_MAPPINGS.update(_OPT_NAMES)
+
 
 # 这里**不再做节点可见性过滤**：``NODE_CLASS_MAPPINGS`` 是内部全量表，
 # 契约测试（tests/test_comfyui_contract.py）要靠它盯住每个节点的接口。
 # "菜单里只显示常用节点"的过滤放在插件入口 ``__init__.py`` —— 那才是
-# ComfyUI 真正读取映射的边界。见该文件里的 SETUP_ONLY_NODES。
-SETUP_ONLY_NODES = frozenset({
-    "H3WushuBuildDataset",     # 用 H3 文本编码器建数据集
-    "H3WushuHarvestPair",      # 从真实 CONDITIONING 采训练对
-    "H3WushuTrainBridge",      # 训练残差桥
-    "H3WushuTrainJevHead",     # 训练 JEV 评分头
-    "H3WushuDegradePreview",   # 降级预览（造训练对用）
-    "H3WushuLocateTextSpan",   # 参考图模式的 token 段定位（诊断）
+# ComfyUI 真正读取映射的边界。
+#
+# 菜单默认**只显示这两个**：
+#   H3WushuOptimize   —— 一个节点干完"判断→优化→输出"
+#   H3WushuClearCache —— 换权重/换模型后清一下
+# 其余（单独的桥、评分、体检、编排、Laya 裁判分体节点、训练/诊断工具）都是
+# 进阶或一次性用途，默认收起。要看全部：设 WUSHU_BRIDGE_NODES=all 重启 ComfyUI。
+CORE_NODES = frozenset({
+    "H3WushuOptimize",
+    "H3WushuClearCache",
 })
